@@ -3,132 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="QTN AUVA">
-    <meta name="apple-mobile-web-app-title" content="QTN AUVA">
-    <meta name="theme-color" content="#1a5d4a">
-    
-    <link rel="icon" type="image/png" href="https://i.ibb.co/689N9hN/LOGO-AUVA-APP-ICON.png">
-    <link rel="apple-touch-icon" href="https://i.ibb.co/689N9hN/LOGO-AUVA-APP-ICON.png">
-
     <title>QTN AUVA Tour & Travel</title>
     <style>
-        :root { --primary: #1a5d4a; --accent: #c9a227; --bg: #f4f7f6; --white: #ffffff; --text: #333333; }
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg); padding: 0; margin: 0; color: var(--text); }
+        :root { --primary: #1a5d4a; --accent: #c9a227; --bg: #f4f7f6; --text: #333333; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; color: var(--text); }
+        .header-auva { background: white; padding: 20px; text-align: center; border-bottom: 4px solid var(--accent); }
         
-        /* HEADER DENGAN LOGO AUVA - Latar Belakang Hijau agar Logo Putih Jelas */
-        .header-auva {
-            background: #ffffff; /* Ubah ke Putih jika logo Bapak berwarna, ubah ke var(--primary) jika logo Bapak Putih */
-            padding: 25px 15px;
-            text-align: center;
-            border-bottom: 5px solid var(--accent);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        .logo-img {
-            max-width: 160px; /* Ukuran logo lebih proporsional */
-            height: auto;
-            margin-bottom: 12px;
-            display: inline-block;
-        }
-        .header-auva h2 { margin: 0; color: var(--primary); font-size: 1.3rem; font-weight: 800; letter-spacing: 1px; }
-
-        .container { padding: 20px 15px; }
-        .card { background: var(--white); border-radius: 18px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.06); margin-bottom: 25px; }
+        /* BOX LOGO CADANGAN JIKA GAMBAR EROR */
+        .logo-container { width: 100%; max-width: 200px; margin: 0 auto 10px; }
+        .logo-img { width: 100%; height: auto; display: block; }
         
-        .section-title { 
-            font-size: 0.85rem; 
-            text-transform: uppercase; 
-            color: var(--primary); 
-            margin: 0 0 15px 0; 
-            font-weight: 800; 
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .section-title::before {
-            content: '';
-            display: block;
-            width: 5px;
-            height: 18px;
-            background: var(--accent);
-            border-radius: 3px;
-        }
-
-        .input-group { margin-bottom: 15px; }
-        label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 7px; color: #555; }
-        input { 
-            width: 100%; 
-            padding: 14px; 
-            border: 1px solid #e1e8e1; 
-            border-radius: 12px; 
-            font-size: 16px; 
-            box-sizing: border-box; 
-            background: #fbfdfb;
-            color: #222;
-            transition: 0.3s;
-        }
-        input:focus { border-color: var(--primary); outline: none; background: #fff; box-shadow: 0 0 0 3px rgba(26, 93, 74, 0.1); }
-        input::placeholder { color: #aaa; font-size: 0.9rem; }
-
-        .row { display: flex; gap: 15px; }
+        .header-auva h2 { margin: 0; color: var(--primary); font-size: 1.2rem; font-weight: bold; }
+        .container { padding: 15px; }
+        .card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .section-title { font-size: 0.8rem; text-transform: uppercase; color: var(--primary); margin-bottom: 15px; font-weight: bold; border-left: 4px solid var(--accent); padding-left: 10px; }
+        .input-group { margin-bottom: 12px; }
+        label { display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px; color: #666; }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .row { display: flex; gap: 10px; }
         .row > div { flex: 1; }
-        
-        .btn { 
-            width: 100%; 
-            padding: 18px; 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            border-radius: 15px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            font-size: 17px; 
-            margin-top: 15px;
-            box-shadow: 0 5px 20px rgba(26, 93, 74, 0.3);
-            transition: 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .btn:active { transform: scale(0.97); box-shadow: 0 2px 10px rgba(26, 93, 74, 0.2); }
-
-        /* HASIL ESTIMASI - Lebih Premium */
-        .res-card { 
-            background: #114234; /* Lebih gelap dari primary */
-            color: white; 
-            padding: 30px; 
-            border-radius: 25px; 
-            display: none; 
-            margin-top: 10px; 
-            border: 2px solid var(--accent); 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-        }
-        .res-card h3 { text-align: center; margin-top: 0; color: var(--accent); font-weight: 800; font-size: 1.4rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 15px; }
-        
-        .res-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed rgba(255,255,255,0.15); }
-        .res-item span { font-size: 0.9rem; opacity: 0.9; }
-        .res-item b { font-size: 1.2rem; font-weight: 700; }
-        
-        .total-box { 
-            background: rgba(201, 162, 39, 0.1); 
-            padding: 20px; 
-            border-radius: 15px; 
-            margin-top: 25px; 
-            text-align: center; 
-            border: 1px solid rgba(201, 162, 39, 0.3);
-        }
-        .highlight { color: var(--accent); font-weight: 900; font-size: 2rem; display: block; margin: 10px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .pax-info { opacity: 0.8; font-size: 12px; font-style: italic; }
-
-        /* FOOTER */
-        .footer-auva { text-align: center; color: #999; font-size: 0.8rem; margin-top: 40px; padding-bottom: 25px; }
+        .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; margin-top: 10px; cursor: pointer; }
+        .res-card { background: #114234; color: white; padding: 20px; border-radius: 20px; display: none; margin-top: 10px; border: 2px solid var(--accent); }
+        .total-box { background: rgba(201, 162, 39, 0.2); padding: 15px; border-radius: 10px; margin-top: 15px; text-align: center; }
+        .highlight { color: var(--accent); font-weight: bold; font-size: 1.8rem; display: block; margin: 5px 0; }
     </style>
 </head>
 <body>
 
     <div class="header-auva">
-        <img src="https://i.ibb.co/m5Ym90Y7/logo-auva.png" alt="Logo AUVA" class="logo-img">
+        <div class="logo-container">
+            <img src="https://i.postimg.cc/85M6X8R4/logo-auva.png" alt="Logo AUVA" class="logo-img">
+        </div>
         <h2>KBIHU AU - ESTIMASI QTN</h2>
     </div>
 
@@ -159,24 +64,12 @@
                 <input type="number" id="cLA" value="14450000">
             </div>
             <div class="row">
-                <div class="input-group">
-                    <label>Perlengkapan</label>
-                    <input type="number" id="cAlat" value="1000000">
-                </div>
-                <div class="input-group">
-                    <label>Handling</label>
-                    <input type="number" id="cHandling" value="100000">
-                </div>
+                <div class="input-group"><label>Perlengkapan</label><input type="number" id="cAlat" value="1000000"></div>
+                <div class="input-group"><label>Handling</label><input type="number" id="cHandling" value="100000"></div>
             </div>
             <div class="row">
-                <div class="input-group">
-                    <label>Asuransi</label>
-                    <input type="number" id="cAsuransi" value="60000">
-                </div>
-                <div class="input-group">
-                    <label>Lain-lain</label>
-                    <input type="number" id="cAplikasi" value="60000">
-                </div>
+                <div class="input-group"><label>Asuransi</label><input type="number" id="cAsuransi" value="60000"></div>
+                <div class="input-group"><label>Lain-lain</label><input type="number" id="cAplikasi" value="60000"></div>
             </div>
 
             <div class="section-title">Margin Kantor</div>
@@ -185,57 +78,40 @@
                 <input type="number" id="profitPct" value="10">
             </div>
 
-            <button class="btn" onclick="hitungUmroh()">HITUNG ESTIMASI</button>
+            <button class="btn" onclick="hitung()">HITUNG ESTIMASI</button>
         </div>
 
         <div id="hasil" class="res-card">
-            <h3>RINGKASAN ESTIMASI</h3>
-            <div class="res-item"><span>Modal Pokok / Pax</span> <b id="outSub"></b></div>
-            <div class="res-item"><span>Total Profit Kotor</span> <span id="outProfKotor"></span></div>
-            <div class="res-item"><span>Beban Biaya TL</span> <span id="outBiayaTL"></span></div>
-            <div class="res-item" style="color: #64ffda;"><span>KEUNTUNGAN BERSIH</span> <b id="outProfBersih"></b></div>
+            <div style="text-align:center; font-weight:bold; border-bottom:1px solid #444; padding-bottom:10px; margin-bottom:10px;">HASIL PERHITUNGAN</div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>Modal/Pax:</span><b id="outSub"></b></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>Profit Bersih:</span><b id="outProfBersih" style="color:#64ffda;"></b></div>
             
             <div class="total-box">
-                <span style="font-weight:bold; font-size: 0.95rem; color: var(--accent); text-transform: uppercase;">HARGA JUAL KE JAMAAH</span>
+                <small>HARGA JUAL KE JAMAAH</small>
                 <span id="outHargaJual" class="highlight"></span>
-                <span class="pax-info">*Berdasarkan <span id="outJamBayar"></span> jamaah berbayar</span>
+                <small id="outInfo"></small>
             </div>
-        </div>
-        
-        <div class="footer-auva">
-            &copy; 2024 AUVA Tour & Travel - KBIHU AU. All rights reserved.
         </div>
     </div>
 
     <script>
-        function hitungUmroh() {
+        function hitung() {
             const nJam = parseInt(document.getElementById('totJam').value) || 0;
             const nFoc = parseInt(document.getElementById('jamGratis').value) || 0;
             const nTL = parseInt(document.getElementById('numTL').value) || 0;
             const pPct = (parseFloat(document.getElementById('profitPct').value) || 0) / 100;
-
-            const costs = ['cTiket', 'cLA', 'cAsuransi', 'cHandling', 'cAlat', 'cAplikasi']
-                .map(id => parseFloat(document.getElementById(id).value) || 0);
+            const costs = ['cTiket', 'cLA', 'cAsuransi', 'cHandling', 'cAlat', 'cAplikasi'].map(id => parseFloat(document.getElementById(id).value) || 0);
             
-            const subtotalPax = costs.reduce((a, b) => a + b, 0);
-            const totalBiayaGroup = subtotalPax * nJam;
-            const profitKotor = totalBiayaGroup * pPct;
-            const biayaTL = subtotalPax * nTL;
-            const profitBersih = profitKotor - biayaTL;
-            
-            const jamBayar = nJam - nFoc;
-            const totalDeal = totalBiayaGroup + profitKotor;
-            const hargaJualPax = jamBayar > 0 ? (totalDeal / jamBayar) : 0;
+            const subtotal = costs.reduce((a, b) => a + b, 0);
+            const profitKotor = (subtotal * nJam) * pPct;
+            const profitBersih = profitKotor - (subtotal * nTL);
+            const hargaJual = ((subtotal * nJam) + profitKotor) / (nJam - nFoc);
 
             document.getElementById('hasil').style.display = 'block';
-            document.getElementById('outSub').innerText = "Rp " + subtotalPax.toLocaleString('id-ID');
-            document.getElementById('outProfKotor').innerText = "Rp " + profitKotor.toLocaleString('id-ID');
-            document.getElementById('outBiayaTL').innerText = "Rp " + biayaTL.toLocaleString('id-ID');
-            document.getElementById('outProfBersih').innerText = "Rp " + profitBersih.toLocaleString('id-ID');
-            document.getElementById('outHargaJual').innerText = "Rp " + Math.round(hargaJualPax).toLocaleString('id-ID');
-            document.getElementById('outJamBayar').innerText = jamBayar;
-
-            document.getElementById('hasil').scrollIntoView({behavior: "smooth"});
+            document.getElementById('outSub').innerText = "Rp " + subtotal.toLocaleString('id-ID');
+            document.getElementById('outProfBersih').innerText = "Rp " + Math.round(profitBersih).toLocaleString('id-ID');
+            document.getElementById('outHargaJual').innerText = "Rp " + Math.round(hargaJual).toLocaleString('id-ID');
+            document.getElementById('outInfo').innerText = "*Berdasarkan " + (nJam - nFoc) + " jamaah bayar";
         }
     </script>
 </body>
