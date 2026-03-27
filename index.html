@@ -22,14 +22,21 @@
         .tab-btn { flex: 1; padding: 15px; border: none; cursor: pointer; font-weight: bold; background: #ddd; color: #666; font-size: 14px; }
         .tab-btn.active { background: var(--primary); color: white; }
         .card { background: var(--white); border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 500px; margin: auto; border-top: 5px solid var(--primary); box-sizing: border-box; }
+        
+        /* Centering Logo */
+        .logo-box { text-align: center; margin-bottom: 10px; }
+        
         h2 { color: var(--primary); text-align: center; margin: 0; font-size: 1.4rem; }
         p.subtitle { text-align: center; color: #666; font-size: 0.9rem; margin-bottom: 20px; font-weight: bold; }
         .section-title { font-size: 0.75rem; text-transform: uppercase; color: var(--accent); margin-top: 15px; margin-bottom: 8px; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 3px; }
         .input-group { margin-bottom: 12px; }
         label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; color: #555; }
         input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; box-sizing: border-box; background: #fafafa; }
-        .row { display: flex; gap: 10px; }
+        
+        /* Grid Row Layout */
+        .row { display: flex; gap: 10px; margin-bottom: 5px; }
         .row > div { flex: 1; }
+        
         .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 15px; }
         .res-card { background: var(--primary); color: white; padding: 20px; border-radius: 15px; display: none; margin: 15px auto; max-width: 500px; box-sizing: border-box; }
         .res-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; }
@@ -68,28 +75,40 @@
 
 <div id="estimasi" class="tab-content active">
     <div class="card">
-        <div class="logo-box"><img src="https://img.icons8.com/color/96/kaaba.png" style="width:80px;"></div>
+        <div class="logo-box">
+            <img src="https://img.icons8.com/color/96/kaaba.png" style="width:80px;">
+        </div>
         <h2>Estimasi Biaya Umroh</h2>
         <p class="subtitle">Auva Kbihu AU</p>
+
         <div class="section-title">Data Rombongan</div>
         <div class="row">
             <div class="input-group"><label>Total Pax</label><input type="number" id="totJam" value="35"></div>
             <div class="input-group"><label>Gratis</label><input type="number" id="jamGratis" value="1"></div>
             <div class="input-group"><label>Jumlah TL</label><input type="number" id="numTL" value="1"></div>
         </div>
+
         <div class="section-title">Komponen Biaya</div>
-        <div class="input-group"><label>Tiket</label><input type="number" id="cTiket" value="15450000"></div>
-        <div class="input-group"><label>LA / Hotel</label><input type="number" id="cLA" value="14450000"></div>
+        <div class="row">
+            <div class="input-group"><label>Tiket</label><input type="number" id="cTiket" value="15450000"></div>
+            <div class="input-group"><label>LA / Hotel</label><input type="number" id="cLA" value="14450000"></div>
+        </div>
+        
         <div class="row">
             <div class="input-group"><label>Asuransi</label><input type="number" id="cAsuransi" value="60000"></div>
             <div class="input-group"><label>Handling</label><input type="number" id="cHandling" value="100000"></div>
         </div>
+
+        <div class="row">
+            <div class="input-group"><label>Perlengkapan</label><input type="number" id="cAlat" value="1000000"></div>
+            <div class="input-group"><label>Aplikasi</label><input type="number" id="cAplikasi" value="60000"></div>
+        </div>
+
         <div class="row">
             <div class="input-group"><label>Diskon/PIC</label><input type="number" id="cPIC" value="0"></div>
-            <div class="input-group"><label>Alat</label><input type="number" id="cAlat" value="1000000"></div>
+            <div class="input-group"><label>Lain-lain</label><input type="number" id="cLain" value="0"></div>
         </div>
-        <div class="input-group"><label>Lain-lain</label><input type="number" id="cLain" value="0"></div>
-        <div class="input-group"><label>Aplikasi</label><input type="number" id="cAplikasi" value="60000"></div>
+
         <div class="section-title">Margin</div>
         <div class="input-group"><label>Profit (%)</label><input type="number" id="profitPct" value="10"></div>
         <button class="btn" onclick="hitungUmroh()">HITUNG ESTIMASI</button>
@@ -119,6 +138,7 @@
 <footer>&copy; 2026 Auva Kbihu AU</footer>
 
 <script>
+/* SEMUA FUNGSI JAVASCRIPT TETAP SAMA AGAR LOGIKA PERHITUNGAN TIDAK BERUBAH */
 let dataKas=[];
 
 function initApp(){
@@ -153,17 +173,15 @@ function openTab(t, el){
     el.classList.add('active');
 }
 
-// KEMBALI KE STRUKTUR LENGKAP
 function hitungUmroh(){
-    const nJam=parseInt(totJam.value)||0;
+    const nJam=parseInt(document.getElementById('totJam').value)||0;
     if(nJam<=0)return alert("Isi jamaah!");
-    const ids=[cTiket,cLA,cAsuransi,cHandling,cPIC,cAlat,cAplikasi,cLain];
-    const sub = ids.map(x=>parseFloat(x.value)||0).reduce((a,b)=>a+b,0);
-    const nFoc=parseInt(jamGratis.value)||0;
-    const nTL=parseInt(numTL.value)||0;
-    const pPct=(parseFloat(profitPct.value)||0)/100;
+    const ids=['cTiket','cLA','cAsuransi','cHandling','cPIC','cAlat','cAplikasi','cLain'];
+    const sub = ids.map(id=>parseFloat(document.getElementById(id).value)||0).reduce((a,b)=>a+b,0);
+    const nFoc=parseInt(document.getElementById('jamGratis').value)||0;
+    const nTL=parseInt(document.getElementById('numTL').value)||0;
+    const pPct=(parseFloat(document.getElementById('profitPct').value)||0)/100;
     
-    // Logika rincian lengkap
     const profitKotor = (sub * nJam) * pPct;
     const biayaTL = sub * nTL;
     const bersih = profitKotor - biayaTL;
@@ -171,6 +189,7 @@ function hitungUmroh(){
     
     const f=n=>"Rp "+Math.round(n).toLocaleString('id-ID');
 
+    let hasil = document.getElementById('hasil');
     hasil.innerHTML=`
         <div class="res-item"><span>Modal Pokok / Pax</span><b>${f(sub)}</b></div>
         <div class="res-item"><span>Profit Kotor Grup</span><span>${f(profitKotor)}</span></div>
@@ -231,10 +250,6 @@ function downloadExcel(){
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Kas");
     XLSX.writeFile(wb, `${namaGrup}.xlsx`);
-}
-
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 </script>
 </body>
