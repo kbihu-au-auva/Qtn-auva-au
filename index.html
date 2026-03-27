@@ -1,125 +1,241 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="display" content="standalone">
-    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Auva%20Kbihu%20AU%22,%22short_name%22:%22Auva%22,%22start_url%22:%22index.html%22,%22display%22:%22standalone%22,%22background_color%22:%22%231a5d4a%22,%22theme_color%22:%22%231a5d4a%22,%22icons%22:[{%22src%22:%22https://img.icons8.com/color/192/kaaba.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22}]}">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a5d4a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Auva Kbihu AU</title>
+<link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Auva%20Kbihu%20AU%22,%22short_name%22:%22Auva%22,%22start_url%22:%22index.html%22,%22display%22:%22standalone%22,%22background_color%22:%22%231a5d4a%22,%22theme_color%22:%22%231a5d4a%22,%22icons%22:[{%22src%22:%22https://img.icons8.com/color/192/kaaba.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22}]}">
+<link rel="icon" href="https://img.icons8.com/color/96/kaaba.png">
+<link rel="apple-touch-icon" href="https://img.icons8.com/color/192/kaaba.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-    <title>Auva Kbihu AU - Estimasi</title>
-    <link rel="icon" type="image/png" href="https://img.icons8.com/color/96/kaaba.png">
-    <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/kaaba.png">
-    
-    <style>
-        :root { --primary: #1a5d4a; --accent: #c9a227; --bg: #f4f7f6; --white: #ffffff; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); padding: 15px; margin: 0; color: #333; }
-        .card { background: var(--white); border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 500px; margin: auto; border-top: 5px solid var(--primary); }
-        .logo-box { text-align: center; font-size: 60px; margin-bottom: 5px; }
-        h2 { color: var(--primary); text-align: center; margin: 0 0 2px 0; font-size: 1.4rem; }
-        p.subtitle { text-align: center; color: #666; font-size: 0.9rem; margin-bottom: 20px; font-weight: bold; }
-        .section-title { font-size: 0.75rem; text-transform: uppercase; color: var(--accent); margin-top: 15px; margin-bottom: 8px; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 3px; }
-        .input-group { margin-bottom: 12px; }
-        label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; color: #555; }
-        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; box-sizing: border-box; background: #fafafa; }
-        .row { display: flex; gap: 10px; }
-        .row > div { flex: 1; }
-        .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 15px; }
-        .res-card { background: var(--primary); color: white; padding: 20px; border-radius: 15px; display: none; margin: 15px auto; max-width: 500px; box-sizing: border-box; }
-        .res-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; }
-        .highlight { color: var(--accent); font-weight: bold; font-size: 1.4rem; }
-        footer { text-align: center; font-size: 0.7rem; color: #999; margin-top: 20px; padding-bottom: 20px; }
-    </style>
+<style>
+:root { --primary: #1a5d4a; --accent: #c9a227; --bg: #f4f7f6; --white: #ffffff; --red: #e74c3c; --green: #2ecc71; }
+body { font-family: -apple-system, sans-serif; background: var(--bg); padding: 10px; margin: 0; color: #333; }
+.tab-menu { display: flex; max-width: 500px; margin: 0 auto 15px; background: #ddd; border-radius: 10px; overflow: hidden; }
+.tab-btn { flex: 1; padding: 15px; border: none; cursor: pointer; font-weight: bold; background: #ddd; color: #666; font-size: 14px; }
+.tab-btn.active { background: var(--primary); color: white; }
+.card { background: var(--white); border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 500px; margin: auto; border-top: 5px solid var(--primary); box-sizing: border-box; }
+h2 { color: var(--primary); text-align: center; margin: 0; font-size: 1.4rem; }
+p.subtitle { text-align: center; color: #666; font-size: 0.9rem; margin-bottom: 20px; font-weight: bold; }
+.section-title { font-size: 0.75rem; text-transform: uppercase; color: var(--accent); margin-top: 15px; margin-bottom: 8px; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 3px; }
+.input-group { margin-bottom: 12px; }
+label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; color: #555; }
+input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; box-sizing: border-box; background: #fafafa; }
+.row { display: flex; gap: 10px; }
+.row > div { flex: 1; }
+.btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 15px; }
+.res-card { background: var(--primary); color: white; padding: 20px; border-radius: 15px; display: none; margin: 15px auto; max-width: 500px; box-sizing: border-box; }
+.res-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; }
+.highlight { color: var(--accent); font-weight: bold; font-size: 1.4rem; }
+.summary-real { background: #2c3e50; color: white; padding: 15px; border-radius: 10px; margin-top: 15px; }
+.table-container { overflow-x: auto; margin-top: 20px; background: white; border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { background: #eee; padding: 10px; text-align: left; }
+td { padding: 10px; border-bottom: 1px solid #eee; }
+.txt-in { color: var(--green); font-weight: bold; }
+.txt-out { color: var(--red); font-weight: bold; }
+.btn-del { color: var(--red); border: none; background: none; font-weight: bold; font-size: 18px; cursor: pointer; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+footer { text-align: center; font-size: 0.7rem; color: #999; margin-top: 20px; padding-bottom: 20px; }
+#loginPage { position:fixed; inset:0; background:var(--primary); display:flex; justify-content:center; align-items:center; z-index:9999; }
+.pin-box { background:white; padding:25px; border-radius:15px; width:85%; max-width:300px; text-align:center; }
+</style>
 </head>
-<body>
 
-<div class="card">
- <div class="logo-box">
-    <img src="https://img.icons8.com/color/96/kaaba.png" style="width: 80px; height: 80px;">
+<body onload="initApp()">
+
+<div id="loginPage">
+    <div class="pin-box">
+        <img src="https://img.icons8.com/color/96/kaaba.png" style="width:60px; margin-bottom:10px;">
+        <h3>Keamanan Auva</h3>
+        <input type="password" id="pinInput" placeholder="Masukkan PIN" style="text-align:center; font-size: 20px; letter-spacing: 5px;">
+        <button onclick="cekPIN()" class="btn">MASUK</button>
+    </div>
 </div>
 
-    <h2>Estimasi Biaya Umroh</h2>
-    <p class="subtitle">Auva Kbihu AU</p>
-    
-    <div class="section-title">Data Rombongan</div>
-    <div class="row">
-        <div class="input-group"><label>Total Orang</label><input type="number" id="totJam" value="35"></div>
-        <div class="input-group"><label>Gratis</label><input type="number" id="jamGratis" value="1"></div>
-        <div class="input-group"><label>Jumlah TL</label><input type="number" id="numTL" value="1"></div>
-    </div>
-
-    <div class="section-title">Komponen Biaya (Per Orang)</div>
-    <div class="input-group"><label>Tiket Maskapai</label><input type="number" id="cTiket" value="15450000"></div>
-    <div class="input-group"><label>LA / Hotel</label><input type="number" id="cLA" value="14450000"></div>
-    <div class="row">
-        <div class="input-group"><label>Asuransi</label><input type="number" id="cAsuransi" value="60000"></div>
-        <div class="input-group"><label>Handling</label><input type="number" id="cHandling" value="100000"></div>
-    </div>
-    <div class="row">
-        <div class="input-group"><label>Diskon / PIC</label><input type="number" id="cPIC" value="0"></div>
-        <div class="input-group"><label>Perlengkapan</label><input type="number" id="cAlat" value="1000000"></div>
-    </div>
-    <div class="input-group"><label>Biaya Aplikasi</label><input type="number" id="cAplikasi" value="60000"></div>
-
-    <div class="section-title">Margin Kantor</div>
-    <div class="input-group"><label>Target Profit (%)</label><input type="number" id="profitPct" value="10"></div>
-
-    <button class="btn" onclick="hitungUmroh()">HITUNG ESTIMASI</button>
+<div class="tab-menu">
+    <button class="tab-btn active" onclick="openTab('estimasi', this)">ESTIMASI</button>
+    <button class="tab-btn" onclick="openTab('real', this)">KAS REAL</button>
 </div>
 
-<div id="hasil" class="res-card">
-    <h3 style="text-align:center; margin-top:0; color: var(--accent);">Ringkasan Estimasi</h3>
-    <div class="res-item"><span>Modal Pokok / Orang</span> <b id="outSub"></b></div>
-    <div class="res-item"><span>Total Profit Kotor</span> <span id="outProfKotor"></span></div>
-    <div class="res-item"><span>Beban Biaya TL</span> <span id="outBiayaTL"></span></div>
-    <div class="res-item" style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
-        <span>KEUNTUNGAN BERSIH</span> <b id="outProfBersih" style="color:#64ffda;"></b>
+<div id="estimasi" class="tab-content active">
+    <div class="card">
+        <div class="logo-box"><img src="https://img.icons8.com/color/96/kaaba.png" style="width:80px;"></div>
+        <h2>Estimasi Biaya Umroh</h2>
+        <p class="subtitle">Auva Kbihu AU</p>
+        <div class="section-title">Data Rombongan</div>
+        <div class="row">
+            <div class="input-group"><label>Total Pax</label><input type="number" id="totJam" value="35"></div>
+            <div class="input-group"><label>Gratis</label><input type="number" id="jamGratis" value="1"></div>
+            <div class="input-group"><label>Jumlah TL</label><input type="number" id="numTL" value="1"></div>
+        </div>
+        <div class="section-title">Komponen Biaya</div>
+        <div class="input-group"><label>Tiket</label><input type="number" id="cTiket" value="15450000"></div>
+        <div class="input-group"><label>LA / Hotel</label><input type="number" id="cLA" value="14450000"></div>
+        <div class="row">
+            <div class="input-group"><label>Asuransi</label><input type="number" id="cAsuransi" value="60000"></div>
+            <div class="input-group"><label>Handling</label><input type="number" id="cHandling" value="100000"></div>
+        </div>
+        <div class="row">
+            <div class="input-group"><label>Diskon/PIC</label><input type="number" id="cPIC" value="0"></div>
+            <div class="input-group"><label>Alat</label><input type="number" id="cAlat" value="1000000"></div>
+        </div>
+        <div class="input-group"><label>Lain-lain</label><input type="number" id="cLain" value="0"></div>
+        <div class="input-group"><label>Aplikasi</label><input type="number" id="cAplikasi" value="60000"></div>
+        <div class="section-title">Margin</div>
+        <div class="input-group"><label>Profit (%)</label><input type="number" id="profitPct" value="10"></div>
+        <button class="btn" onclick="hitungUmroh()">HITUNG ESTIMASI</button>
     </div>
-    <div class="res-item" style="margin-top:10px; border-top: 2px solid var(--accent); padding-top:15px;">
-        <span style="font-weight:bold;">HARGA BROSUR</span>
-        <span id="outHargaJual" class="highlight"></span>
+    <div id="hasil" class="res-card"></div>
+</div>
+
+<div id="real" class="tab-content">
+    <div class="card">
+        <h2>Pencatatan REAL</h2>
+        <div class="section-title">Input Transaksi</div>
+        <input id="ketReal" placeholder="Keterangan" style="margin-bottom:10px;">
+        <div class="row">
+            <div style="flex:2"><input id="nomReal" type="number" placeholder="Nominal Rp"></div>
+            <div style="flex:1"><select id="tipeReal"><option value="masuk">In</option><option value="keluar">Out</option></select></div>
+        </div>
+        <button class="btn" onclick="tambah()" style="background:var(--accent)">TAMBAH TRANSAKSI</button>
+        <div class="summary-real" id="summary"></div>
+        <div class="table-container"><table><thead><tr><th>Tgl</th><th>Ket</th><th>Nom</th><th></th></tr></thead><tbody id="bodyKas"></tbody></table></div>
+        
+        <button class="btn" onclick="downloadExcel()" style="background:#27ae60">💾 DOWNLOAD LAPORAN (.xlsx)</button>
+        <button class="btn" onclick="resetData()" style="background:var(--red); font-size:12px; margin-top:20px;">🗑️ KOSONGKAN BUKU KAS (PINDAH ROMBONGAN)</button>
+        <button class="btn" onclick="gantiPIN()" style="background:#95a5a6; font-size:11px; margin-top:10px;">🔑 GANTI PIN</button>
+        <button class="btn" onclick="resetPIN()" style="background:#f39c12; font-size:11px; margin-top:10px;">🔑 RESET PIN JIKA LUPA</button>
     </div>
-    <p style="font-size: 11px; opacity: 0.8; text-align: center; margin-top: 15px;" id="ket">
-    </p>
 </div>
 
 <footer>&copy; 2026 Auva Kbihu AU</footer>
 
 <script>
-function hitungUmroh() {
-    const nJam = parseInt(document.getElementById('totJam').value) || 0;
-    const nFoc = parseInt(document.getElementById('jamGratis').value) || 0;
-    const nTL = parseInt(document.getElementById('numTL').value) || 0;
-    const pPct = (parseFloat(document.getElementById('profitPct').value) || 0) / 100;
+let dataKas=[];
 
-    const costs = ['cTiket', 'cLA', 'cAsuransi', 'cHandling', 'cPIC', 'cAlat', 'cAplikasi']
-        .map(id => parseFloat(document.getElementById(id).value) || 0);
-    
-    const subtotalPax = costs.reduce((a, b) => a + b, 0);
-    const totalBiayaGroup = subtotalPax * nJam;
-    const profitKotor = totalBiayaGroup * pPct;
-    const biayaTL = subtotalPax * nTL;
-    const profitBersih = profitKotor - biayaTL;
-    
-    const jamBayar = nJam - nFoc;
-    const totalDeal = totalBiayaGroup + profitKotor;
-    const hargaJualPax = jamBayar > 0 ? (totalDeal / jamBayar) : 0;
+function initApp(){
+    let savedPIN=localStorage.getItem('auva_pin');
+    if(!savedPIN){
+        let p=prompt("Buat PIN Keamanan Baru:");
+        localStorage.setItem('auva_pin', p || '1234');
+    }
+    let d=localStorage.getItem('auva_kas_data');
+    if(d) dataKas=JSON.parse(d);
+    render();
+}
 
-    const f = (n) => "Rp " + Math.ceil(n).toLocaleString('id-ID');
+function cekPIN(){
+    if(document.getElementById('pinInput').value === localStorage.getItem('auva_pin')){
+        document.getElementById('loginPage').style.display='none';
+    } else { alert("PIN SALAH!"); }
+}
 
-    document.getElementById('hasil').style.display = 'block';
-    document.getElementById('outSub').innerText = f(subtotalPax);
-    document.getElementById('outProfKotor').innerText = f(profitKotor);
-    document.getElementById('outBiayaTL').innerText = f(biayaTL);
-    document.getElementById('outProfBersih').innerText = f(profitBersih);
-    document.getElementById('outHargaJual').innerText = f(hargaJualPax);
-    document.getElementById('ket').innerText = `*Berdasarkan ${jamBayar} orang bayar & ${nFoc} orang gratis.`;
+function gantiPIN(){
+    let lama=prompt("Masukkan PIN lama:");
+    if(lama === localStorage.getItem('auva_pin')) {
+        let baru=prompt("PIN baru:");
+        if(baru) { localStorage.setItem('auva_pin', baru); alert("Berhasil!"); }
+    } else { alert("Gagal!"); }
+}
 
-    document.getElementById('hasil').scrollIntoView({behavior: "smooth"});
+// FITUR BARU: Reset PIN jika lupa, aman tanpa hapus data
+function resetPIN(){
+    let konfirmasi = confirm("Apakah yakin ingin reset PIN? Data estimasi & real kas tetap aman.");
+    if(!konfirmasi) return;
+    let baru = prompt("Masukkan PIN baru:");
+    if(baru) {
+        localStorage.setItem('auva_pin', baru);
+        alert("PIN berhasil direset! Gunakan PIN baru untuk login.");
+    }
+}
+
+function openTab(t, el){
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById(t).classList.add('active');
+    el.classList.add('active');
+}
+
+function hitungUmroh(){
+    const nJam=parseInt(totJam.value)||0;
+    if(nJam<=0)return alert("Isi jamaah!");
+    const ids=[cTiket,cLA,cAsuransi,cHandling,cPIC,cAlat,cAplikasi,cLain];
+    const sub = ids.map(x=>parseFloat(x.value)||0).reduce((a,b)=>a+b,0);
+    const nFoc=parseInt(jamGratis.value)||0;
+    const nTL=parseInt(numTL.value)||0;
+    const pPct=(parseFloat(profitPct.value)||0)/100;
+    const profit = (sub * nJam) * pPct;
+    const biayaTL = sub * nTL;
+    const bersih = profit - biayaTL;
+    const jual = ((sub * nJam) + profit) / (nJam - nFoc);
+    const f=n=>"Rp "+Math.round(n).toLocaleString('id-ID');
+
+    hasil.innerHTML=`
+        <div class="res-item"><span>Modal Pokok / Pax</span><b>${f(sub)}</b></div>
+        <div class="res-item" style="color:#2ecc71"><span>PROFIT BERSIH</span><b>${f(bersih)}</b></div>
+        <div class="res-item" style="border-top:2px solid var(--accent); margin-top:10px; padding-top:10px">
+            <span style="font-weight:bold">HARGA BROSUR</span><span class="highlight">${f(jual)}</span>
+        </div>`;
+    hasil.style.display='block';
+}
+
+function tambah(){
+    let k=document.getElementById('ketReal').value;
+    let n=parseInt(document.getElementById('nomReal').value)||0;
+    let t=document.getElementById('tipeReal').value;
+    if(!k || n<=0) return alert("Isi data!");
+    dataKas.push({id:Date.now(), tgl:new Date().toLocaleDateString('id-ID'), ket:k, nom:n, tipe:t});
+    save();
+    document.getElementById('ketReal').value=""; document.getElementById('nomReal').value="";
+}
+
+function save(){
+    localStorage.setItem('auva_kas_data', JSON.stringify(dataKas));
+    render();
+}
+
+function render(){
+    let body=document.getElementById('bodyKas');
+    body.innerHTML="";
+    let masuk=0, keluar=0;
+    dataKas.forEach(i=>{
+        if(i.tipe==='masuk') masuk+=i.nom; else keluar+=i.nom;
+        body.innerHTML+=`<tr><td>${i.tgl}</td><td>${i.ket}</td><td class="${i.tipe==='masuk'?'txt-in':'txt-out'}">${i.nom.toLocaleString('id-ID')}</td><td><button class="btn-del" onclick="hapus(${i.id})">×</button></td></tr>`;
+    });
+    document.getElementById('summary').innerHTML=`<b>Saldo Akhir: Rp ${(masuk-keluar).toLocaleString('id-ID')}</b>`;
+}
+
+function hapus(id){
+    if(confirm("Hapus baris?")) { dataKas=dataKas.filter(x=>x.id!==id); save(); }
+}
+
+function resetData() {
+    if(confirm("PERINGATAN: Apakah Anda sudah mendownload Excel rombongan ini? Klik OK jika ingin mengosongkan buku kas untuk rombongan baru.")) {
+        dataKas = [];
+        save();
+        alert("Buku Kas telah dikosongkan.");
+    }
+}
+
+function downloadExcel(){
+    if(dataKas.length === 0) return alert("Data kosong!");
+    let namaGrup = prompt("Masukkan Nama Rombongan (untuk nama file):", "Rombongan_Umroh");
+    if(!namaGrup) return;
+    const ws = XLSX.utils.json_to_sheet(dataKas.map(i=>({Tanggal: i.tgl, Keterangan: i.ket, Tipe: i.tipe.toUpperCase(), Nominal: i.nom})));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Kas");
+    XLSX.writeFile(wb, `${namaGrup}.xlsx`);
+}
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 </script>
 </body>
-</html>
+                                                           </html>
