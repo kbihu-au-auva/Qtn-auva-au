@@ -96,7 +96,7 @@
             <div class="input-group"><label>Lain-lain</label><input type="number" id="cLain" value="0"></div>
         </div>
         <div class="section-title">Margin</div>
-        <div class="input-group"><label>Profit (%)</label><input type="number" id="profitPct" value="10"></div>
+        <div class="input-group"><label>Profit (%)</label><input type="number" id="profitPct" value="0"></div>
         <button class="btn" onclick="hitungUmroh()">HITUNG ESTIMASI</button>
     </div>
     <div id="hasil" class="res-card"></div>
@@ -117,6 +117,7 @@
         <button class="btn" onclick="downloadExcel()" style="background:#27ae60">💾 DOWNLOAD LAPORAN (.xlsx)</button>
         <button class="btn" onclick="resetData()" style="background:var(--red); font-size:12px; margin-top:20px;">🗑️ KOSONGKAN BUKU KAS (PINDAH ROMBONGAN)</button>
         <button class="btn" onclick="gantiPIN()" style="background:#95a5a6; font-size:11px; margin-top:10px;">🔑 GANTI PIN</button>
+        <button class="btn" onclick="resetPIN()" style="background:#f39c12; font-size:11px; margin-top:10px;">🔑 RESET PIN (LUPA)</button>
     </div>
 </div>
 
@@ -125,6 +126,7 @@
 <script>
 let dataKas=[];
 
+// --- FUNGSI KEAMANAN ---
 function initApp(){
     let savedPIN=localStorage.getItem('auva_pin');
     if(!savedPIN){
@@ -146,10 +148,25 @@ function gantiPIN(){
     let lama=prompt("Masukkan PIN lama:");
     if(lama === localStorage.getItem('auva_pin')) {
         let baru=prompt("PIN baru:");
-        if(baru) { localStorage.setItem('auva_pin', baru); alert("Berhasil!"); }
-    } else { alert("Gagal!"); }
+        if(baru) { localStorage.setItem('auva_pin', baru); alert("PIN Berhasil diganti!"); }
+    } else { alert("PIN Lama Salah!"); }
 }
 
+function resetPIN(){
+    // Gunakan kode admin rahasia agar tidak sembarang orang bisa reset
+    let master = prompt("Masukkan KODE ADMIN untuk reset (Default: 0000):");
+    if(master === "0000"){
+        let baru = prompt("Masukkan PIN Baru:");
+        if(baru){
+            localStorage.setItem('auva_pin', baru);
+            alert("PIN Berhasil direset ke: " + baru);
+        }
+    } else {
+        alert("KODE ADMIN SALAH! Gagal reset.");
+    }
+}
+
+// --- FUNGSI TAB ---
 function openTab(t, el){
     document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
@@ -157,6 +174,7 @@ function openTab(t, el){
     el.classList.add('active');
 }
 
+// --- FUNGSI HITUNG ---
 function hitungUmroh(){
     const nJam=parseInt(document.getElementById('totJam').value)||0;
     if(nJam<=0)return alert("Isi jamaah!");
@@ -170,8 +188,6 @@ function hitungUmroh(){
     const biayaTL = sub * nTL;
     const bersih = profitKotor - biayaTL;
     const jual = ((sub * nJam) + profitKotor) / (nJam - nFoc);
-
-    // LOGIKA BARU: Total Omzet Grup
     const totalOmzet = jual * (nJam - nFoc);
     
     const f=n=>"Rp "+Math.round(n).toLocaleString('id-ID');
@@ -190,6 +206,7 @@ function hitungUmroh(){
     hasil.scrollIntoView({behavior: "smooth"});
 }
 
+// --- FUNGSI KAS REAL ---
 function tambah(){
     let k=document.getElementById('ketReal').value;
     let n=parseInt(document.getElementById('nomReal').value)||0;
@@ -228,288 +245,27 @@ function resetData() {
     }
 }
 
-// ============================================
-// FUNGSI DOWNLOAD EXCEL - VERSI UNIVERSAL 1 SHEET BERWARNA
-// ============================================
-function downloadExcel(){
+// --- FUNGSI EXCEL ---
+function downloadExcel() {
     if(dataKas.length === 0) return alert("Data kosong!");
-    
-    // Input dari user
-    let namaEvent = prompt("Nama Rombongan/Event:", "Rombongan_Umroh");
-    if(!namaEvent) return;
-    
-    let defaultPeserta = document.getElementById('totJam') ? document.getElementById('totJam').value : "0";
-    let jumlahPeserta = prompt("Jumlah Peserta:", defaultPeserta);
-    if(!jumlahPeserta) jumlahPeserta = "0";
-    
-    let namaPetugas = prompt("Nama Petugas:", "Admin");
-    if(!namaPetugas) namaPetugas = "Admin";
-    
-    // Hitung total
-    let totalMasuk = 0, totalKeluar = 0;
-    dataKas.forEach(i => {
-        if(i.tipe === 'masuk') totalMasuk += i.nom;
-        else totalKeluar += i.nom;
-    });
-    let saldoAkhir = totalMasuk - totalKeluar;
-    
-    // Data tanggal
-    let tanggalAwal = dataKas.length > 0 ? dataKas[0].tgl : '-';
-    let tanggalAkhir = dataKas.length > 0 ? dataKas[dataKas.length-1].tgl : '-';
-    let tglCetak = new Date().toLocaleDateString('id-ID');
-    
-    // Buat worksheet
-    const ws = {};
-    const range = { s: { c: 0, r: 0 }, e: { c: 5, r: 0 } };
-    
-    // Helper untuk set cell
-    function setCell(r, c, v, style) {
-        const cell = { v: v, t: typeof v === 'number' ? 'n' : 's' };
-        if(style) cell.s = style;
-        ws[XLSX.utils.encode_cell({r:r, c:c})] = cell;
-    }
-    
-    // Style definitions
-    const styleHeaderApp = {
-        fill: { fgColor: { rgb: "1a5d4a" } },
-        font: { color: { rgb: "FFFFFF" }, bold: true, sz: 14, name: "Arial" },
-        alignment: { horizontal: "center" }
-    };
-    
-    const styleTitle = {
-        font: { bold: true, sz: 12, name: "Arial" },
-        alignment: { horizontal: "center" }
-    };
-    
-    const styleInfo = {
-        font: { sz: 11, name: "Arial" }
-    };
-    
-    const styleInfoItalic = {
-        font: { sz: 10, name: "Arial", italic: true }
-    };
-    
-    const styleTableHeader = {
-        fill: { fgColor: { rgb: "1a5d4a" } },
-        font: { color: { rgb: "FFFFFF" }, bold: true, sz: 11, name: "Arial" },
-        alignment: { horizontal: "center", vertical: "center" },
-        border: {
-            top: { style: "thin", color: { rgb: "000000" } },
-            bottom: { style: "thin", color: { rgb: "000000" } },
-            left: { style: "thin", color: { rgb: "000000" } },
-            right: { style: "thin", color: { rgb: "000000" } }
-        }
-    };
-    
-    const styleMasuk = {
-        font: { color: { rgb: "27ae60" }, sz: 11, name: "Arial" },
-        alignment: { horizontal: "right" }
-    };
-    
-    const styleKeluar = {
-        font: { color: { rgb: "e74c3c" }, sz: 11, name: "Arial" },
-        alignment: { horizontal: "right" }
-    };
-    
-    const styleNormal = {
-        font: { sz: 11, name: "Arial" },
-        alignment: { horizontal: "left" }
-    };
-    
-    const styleCenter = {
-        font: { sz: 11, name: "Arial" },
-        alignment: { horizontal: "center" }
-    };
-    
-    const styleRight = {
-        font: { sz: 11, name: "Arial" },
-        alignment: { horizontal: "right" }
-    };
-    
-    const styleTotalMasuk = {
-        fill: { fgColor: { rgb: "d5f4e6" } },
-        font: { bold: true, sz: 11, name: "Arial" },
-        alignment: { horizontal: "right" }
-    };
-    
-    const styleTotalKeluar = {
-        fill: { fgColor: { rgb: "fadbd8" } },
-        font: { bold: true, sz: 11, name: "Arial" },
-        alignment: { horizontal: "right" }
-    };
-    
-    const styleTotalSaldo = {
-        fill: { fgColor: { rgb: "d6eaf8" } },
-        font: { bold: true, sz: 12, name: "Arial", color: { rgb: "2980b9" } },
-        alignment: { horizontal: "right" }
-    };
-    
-    const styleStatus = {
-        fill: { fgColor: { rgb: saldoAkhir >= 0 ? "d5f4e6" : "fadbd8" } },
-        font: { bold: true, sz: 11, name: "Arial", color: { rgb: saldoAkhir >= 0 ? "27ae60" : "e74c3c" } },
-        alignment: { horizontal: "center" }
-    };
-    
-    // Border untuk semua cell
-    const borderAll = {
-        top: { style: "thin", color: { rgb: "000000" } },
-        bottom: { style: "thin", color: { rgb: "000000" } },
-        left: { style: "thin", color: { rgb: "000000" } },
-        right: { style: "thin", color: { rgb: "000000" } }
-    };
-    
-    // BARIS 1: Header Aplikasi
-    setCell(0, 0, "🕌 AUVA KBIHU AU", styleHeaderApp);
-    ws['!merges'] = [{ s: {r:0, c:0}, e: {r:0, c:5} }];
-    
-    // BARIS 2: Judul
-    setCell(1, 0, "LAPORAN KEUANGAN", styleTitle);
-    ws['!merges'].push({ s: {r:1, c:0}, e: {r:1, c:5} });
-    
-    // BARIS 3-6: Info
-    setCell(2, 0, "Nama Event: " + namaEvent, styleInfo);
-    ws['!merges'].push({ s: {r:2, c:0}, e: {r:2, c:5} });
-    
-    setCell(3, 0, "Periode: " + tanggalAwal + " s/d " + tanggalAkhir, styleInfo);
-    ws['!merges'].push({ s: {r:3, c:0}, e: {r:3, c:5} });
-    
-    setCell(4, 0, "Jumlah Peserta: " + jumlahPeserta + " orang", styleInfo);
-    ws['!merges'].push({ s: {r:4, c:0}, e: {r:4, c:5} });
-    
-    setCell(5, 0, "Dicetak: " + tglCetak + " | Petugas: " + namaPetugas, styleInfoItalic);
-    ws['!merges'].push({ s: {r:5, c:0}, e: {r:5, c:5} });
-    
-    // BARIS 7: Kosong
-    // BARIS 8: Header Tabel
-    const headers = ["NO", "TANGGAL", "KETERANGAN", "KATEGORI", "TIPE", "NOMINAL"];
-    headers.forEach((h, i) => {
-        let cellStyle = JSON.parse(JSON.stringify(styleTableHeader));
-        cellStyle.border = borderAll;
-        setCell(7, i, h, cellStyle);
-    });
-    
-    // DATA TRANSAKSI (Baris 9+)
-    let currentRow = 8;
-    dataKas.forEach((item, idx) => {
-        // Auto detect kategori
-        let kategori = "Lain-lain";
-        let ket = item.ket.toLowerCase();
-        
-        if(item.tipe === 'masuk') {
-            kategori = "Pemasukan";
-        } else {
-            if(ket.includes('tiket') || ket.includes('pesawat') || ket.includes('flight')) kategori = "Transportasi";
-            else if(ket.includes('hotel') || ket.includes('penginapan') || ket.includes('la')) kategori = "Akomodasi";
-            else if(ket.includes('makan') || ket.includes('catering') || ket.includes('konsumsi')) kategori = "Konsumsi";
-            else if(ket.includes('perlengkapan') || ket.includes('alat') || ket.includes('koper')) kategori = "Perlengkapan";
-            else if(ket.includes('handling') || ket.includes('bandara')) kategori = "Handling";
-            else if(ket.includes('asuransi')) kategori = "Asuransi";
-            else if(ket.includes('aplikasi') || ket.includes('app')) kategori = "Aplikasi";
-            else if(ket.includes('tl') || ket.includes('pembimbing') || ket.includes('guide') || ket.includes('pilot') || ket.includes('mutawif')) kategori = "Pembimbing";
-            else if(ket.includes('bus') || ket.includes('mobil') || ket.includes('transport')) kategori = "Transport Lokal";
-        }
-        
-        // Set cell dengan border
-        let cellStyle = JSON.parse(JSON.stringify(styleNormal));
-        cellStyle.border = borderAll;
-        
-        let centerStyle = JSON.parse(JSON.stringify(styleCenter));
-        centerStyle.border = borderAll;
-        
-        let rightStyle = JSON.parse(JSON.stringify(styleRight));
-        rightStyle.border = borderAll;
-        
-        let tipeStyle = item.tipe === 'masuk' ? styleMasuk : styleKeluar;
-        let tipeStyleWithBorder = JSON.parse(JSON.stringify(tipeStyle));
-        tipeStyleWithBorder.border = borderAll;
-        
-        setCell(currentRow, 0, idx + 1, centerStyle);
-        setCell(currentRow, 1, item.tgl, centerStyle);
-        setCell(currentRow, 2, item.ket, cellStyle);
-        setCell(currentRow, 3, kategori, cellStyle);
-        setCell(currentRow, 4, item.tipe.toUpperCase(), tipeStyleWithBorder);
-        setCell(currentRow, 5, item.nom, rightStyle);
-        
-        currentRow++;
-    });
-    
-    // BARIS KOSONG
-    currentRow++;
-    
-    // SUMMARY
-    // Total Pemasukan
-    let labelStyle = JSON.parse(JSON.stringify(styleNormal));
-    labelStyle.border = borderAll;
-    labelStyle.font.bold = true;
-    
-    setCell(currentRow, 0, "", labelStyle);
-    setCell(currentRow, 1, "", labelStyle);
-    setCell(currentRow, 2, "", labelStyle);
-    setCell(currentRow, 3, "", labelStyle);
-    setCell(currentRow, 4, "TOTAL PEMASUKAN", labelStyle);
-    
-    let totalMasukStyle = JSON.parse(JSON.stringify(styleTotalMasuk));
-    totalMasukStyle.border = borderAll;
-    setCell(currentRow, 5, totalMasuk, totalMasukStyle);
-    currentRow++;
-    
-    // Total Pengeluaran
-    setCell(currentRow, 0, "", labelStyle);
-    setCell(currentRow, 1, "", labelStyle);
-    setCell(currentRow, 2, "", labelStyle);
-    setCell(currentRow, 3, "", labelStyle);
-    setCell(currentRow, 4, "TOTAL PENGELUARAN", labelStyle);
-    
-    let totalKeluarStyle = JSON.parse(JSON.stringify(styleTotalKeluar));
-    totalKeluarStyle.border = borderAll;
-    setCell(currentRow, 5, totalKeluar, totalKeluarStyle);
-    currentRow++;
-    
-    // Saldo Akhir
-    setCell(currentRow, 0, "", labelStyle);
-    setCell(currentRow, 1, "", labelStyle);
-    setCell(currentRow, 2, "", labelStyle);
-    setCell(currentRow, 3, "", labelStyle);
-    setCell(currentRow, 4, "SALDO AKHIR", labelStyle);
-    
-    let saldoStyle = JSON.parse(JSON.stringify(styleTotalSaldo));
-    saldoStyle.border = borderAll;
-    setCell(currentRow, 5, saldoAkhir, saldoStyle);
-    currentRow++;
-    
-    // Status
-    setCell(currentRow, 0, "", labelStyle);
-    setCell(currentRow, 1, "", labelStyle);
-    setCell(currentRow, 2, "", labelStyle);
-    setCell(currentRow, 3, "", labelStyle);
-    setCell(currentRow, 4, "STATUS", labelStyle);
-    
-    let statusText = saldoAkhir >= 0 ? "✅ SURPLUS" : "❌ DEFISIT";
-    let statusStyle = JSON.parse(JSON.stringify(styleStatus));
-    statusStyle.border = borderAll;
-    setCell(currentRow, 5, statusText, statusStyle);
-    
-    // Set range
-    range.e.r = currentRow;
-    ws['!ref'] = XLSX.utils.encode_range(range);
-    
-    // Set column widths
-    ws['!cols'] = [
-        {wch: 5},   // NO
-        {wch: 12},  // TANGGAL
-        {wch: 35},  // KETERANGAN
-        {wch: 15},  // KATEGORI
-        {wch: 12},  // TIPE
-        {wch: 20}   // NOMINAL
-    ];
-    
-    // Create workbook
+    let namaGrup = prompt("Nama Rombongan:", "Laporan_Auva");
+    if(!namaGrup) return;
+
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Laporan Keuangan");
     
-    // Generate filename
-    let tglFile = new Date().toISOString().slice(0,10).replace(/-/g, "");
-    XLSX.writeFile(wb, namaEvent + "_Laporan_Keuangan_" + tglFile + ".xlsx");
+    // Sheet 1: Detail Transaksi
+    const ws1Data = dataKas.map(i => ({ Tanggal: i.tgl, Keterangan: i.ket, Tipe: i.tipe.toUpperCase(), Nominal: i.nom }));
+    const ws1 = XLSX.utils.json_to_sheet(ws1Data);
+    XLSX.utils.book_append_sheet(wb, ws1, "Detail Transaksi");
+
+    // Sheet 2: Ringkasan
+    let inTotal = dataKas.filter(i=>i.tipe==='masuk').reduce((a,b)=>a+b.nom,0);
+    let outTotal = dataKas.filter(i=>i.tipe==='keluar').reduce((a,b)=>a+b.nom,0);
+    const ws2Data = [{ Pemasukan: inTotal, Pengeluaran: outTotal, Saldo: inTotal-outTotal }];
+    const ws2 = XLSX.utils.json_to_sheet(ws2Data);
+    XLSX.utils.book_append_sheet(wb, ws2, "Rekapan");
+
+    XLSX.writeFile(wb, namaGrup + ".xlsx");
 }
 </script>
 </body>
