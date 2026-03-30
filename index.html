@@ -6,12 +6,14 @@
     <meta name="theme-color" content="#1a5d4a">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-
     <title>Auva Kbihu AU</title>
 
     <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Auva%20Kbihu%20AU%22,%22short_name%22:%22Auva%22,%22start_url%22:%22index.html%22,%22display%22:%22standalone%22,%22background_color%22:%22%231a5d4a%22,%22theme_color%22:%22%231a5d4a%22,%22icons%22:[{%22src%22:%22https://img.icons8.com/color/192/kaaba.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22}]}">
     <link rel="icon" href="https://img.icons8.com/color/96/kaaba.png">
     <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/kaaba.png">
+    
+    <!-- FontAwesome CDN - Ditambahkan untuk ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -31,7 +33,7 @@
         input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; box-sizing: border-box; background: #fafafa; }
         .row { display: flex; gap: 10px; margin-bottom: 5px; }
         .row > div { flex: 1; }
-        .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 15px; }
+        .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .res-card { background: var(--primary); color: white; padding: 20px; border-radius: 15px; display: none; margin: 15px auto; max-width: 500px; box-sizing: border-box; }
         .res-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; }
         .highlight { color: var(--accent); font-weight: bold; font-size: 1.4rem; }
@@ -42,7 +44,8 @@
         td { padding: 10px; border-bottom: 1px solid #eee; }
         .txt-in { color: var(--green); font-weight: bold; }
         .txt-out { color: var(--red); font-weight: bold; }
-        .btn-del { color: var(--red); border: none; background: none; font-weight: bold; font-size: 18px; cursor: pointer; }
+        .btn-del { color: var(--red); border: none; background: none; font-weight: bold; font-size: 18px; cursor: pointer; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 5px; transition: background 0.2s; }
+        .btn-del:hover { background: rgba(231, 76, 60, 0.1); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         footer { text-align: center; font-size: 0.7rem; color: #999; margin-top: 20px; padding-bottom: 20px; }
@@ -52,76 +55,82 @@
 </head>
 
 <body onload="initApp()">
-
-<div id="loginPage">
-    <div class="pin-box">
-        <img src="https://img.icons8.com/color/96/kaaba.png" style="width:60px; margin-bottom:10px;">
-        <h3>Keamanan Auva</h3>
-        <input type="password" id="pinInput" placeholder="Masukkan PIN" style="text-align:center; font-size: 20px; letter-spacing: 5px;">
-        <button onclick="cekPIN()" class="btn">MASUK</button>
+    <div id="loginPage">
+        <div class="pin-box">
+            <img src="https://img.icons8.com/color/96/kaaba.png" style="width:60px; margin-bottom:10px;">
+            <h3>Keamanan Auva</h3>
+            <input type="password" id="pinInput" placeholder="Masukkan PIN" style="text-align:center; font-size: 20px; letter-spacing: 5px;">
+            <button onclick="cekPIN()" class="btn"><i class="fas fa-lock"></i> MASUK</button>
+        </div>
     </div>
-</div>
 
-<div class="tab-menu">
-    <button class="tab-btn active" onclick="openTab('estimasi', this)">ESTIMASI</button>
-    <button class="tab-btn" onclick="openTab('real', this)">KAS REAL</button>
-</div>
-
-<div id="estimasi" class="tab-content active">
-    <div class="card">
-        <div class="logo-box"><img src="https://img.icons8.com/color/96/kaaba.png" style="width:80px;"></div>
-        <h2>Estimasi Biaya Umroh</h2>
-        <p class="subtitle">Auva Kbihu AU</p>
-        <div class="section-title">Data Rombongan</div>
-        <div class="row">
-            <div class="input-group"><label>Total Pax</label><input type="number" id="totJam" value="35"></div>
-            <div class="input-group"><label>Gratis</label><input type="number" id="jamGratis" value="1"></div>
-            <div class="input-group"><label>Jumlah TL</label><input type="number" id="numTL" value="1"></div>
-        </div>
-        <div class="section-title">Komponen Biaya</div>
-        <div class="row">
-            <div class="input-group"><label>Tiket</label><input type="number" id="cTiket" value="15450000"></div>
-            <div class="input-group"><label>LA / Hotel</label><input type="number" id="cLA" value="14450000"></div>
-        </div>
-        <div class="row">
-            <div class="input-group"><label>Asuransi</label><input type="number" id="cAsuransi" value="60000"></div>
-            <div class="input-group"><label>Handling</label><input type="number" id="cHandling" value="100000"></div>
-        </div>
-        <div class="row">
-            <div class="input-group"><label>Perlengkapan</label><input type="number" id="cAlat" value="1000000"></div>
-            <div class="input-group"><label>Aplikasi</label><input type="number" id="cAplikasi" value="60000"></div>
-        </div>
-        <div class="row">
-            <div class="input-group"><label>Diskon/PIC</label><input type="number" id="cPIC" value="0"></div>
-            <div class="input-group"><label>Lain-lain</label><input type="number" id="cLain" value="0"></div>
-        </div>
-        <div class="section-title">Margin</div>
-        <div class="input-group"><label>Profit (%)</label><input type="number" id="profitPct" value="0"></div>
-        <button class="btn" onclick="hitungUmroh()">HITUNG ESTIMASI</button>
+    <div class="tab-menu">
+        <button class="tab-btn active" onclick="openTab('estimasi', this)">ESTIMASI</button>
+        <button class="tab-btn" onclick="openTab('real', this)">KAS REAL</button>
     </div>
-    <div id="hasil" class="res-card"></div>
-</div>
 
-<div id="real" class="tab-content">
-    <div class="card">
-        <h2>Pencatatan REAL</h2>
-        <div class="section-title">Input Transaksi</div>
-        <input id="ketReal" placeholder="Keterangan" style="margin-bottom:10px;">
-        <div class="row">
-            <div style="flex:2"><input id="nomReal" type="number" placeholder="Nominal Rp"></div>
-            <div style="flex:1"><select id="tipeReal"><option value="masuk">In</option><option value="keluar">Out</option></select></div>
+    <div id="estimasi" class="tab-content active">
+        <div class="card">
+            <div class="logo-box"><img src="https://img.icons8.com/color/96/kaaba.png" style="width:80px;"></div>
+            <h2>Estimasi Biaya Umroh</h2>
+            <p class="subtitle">Auva Kbihu AU</p>
+            
+            <div class="section-title">Data Rombongan</div>
+            <div class="input-group">
+                <label>Nama Paket / Lokasi</label>
+                <input type="text" id="lokasiPaket" value="Umroh Syawal - Auva Kbihu AU">
+            </div>
+            <div class="row">
+                <div class="input-group"><label>Total Pax</label><input type="number" id="totJam" value="35"></div>
+                <div class="input-group"><label>Gratis</label><input type="number" id="jamGratis" value="1"></div>
+                <div class="input-group"><label>Jumlah TL</label><input type="number" id="numTL" value="1"></div>
+            </div>
+
+            <div class="section-title">Komponen Biaya</div>
+            <div class="row">
+                <div class="input-group"><label>Tiket</label><input type="number" id="cTiket" value="15450000"></div>
+                <div class="input-group"><label>LA / Hotel</label><input type="number" id="cLA" value="14450000"></div>
+            </div>
+            <div class="row">
+                <div class="input-group"><label>Asuransi</label><input type="number" id="cAsuransi" value="60000"></div>
+                <div class="input-group"><label>Handling</label><input type="number" id="cHandling" value="100000"></div>
+            </div>
+            <div class="row">
+                <div class="input-group"><label>Perlengkapan</label><input type="number" id="cAlat" value="1000000"></div>
+                <div class="input-group"><label>Aplikasi</label><input type="number" id="cAplikasi" value="60000"></div>
+            </div>
+            <div class="row">
+                <div class="input-group"><label>Diskon/PIC</label><input type="number" id="cPIC" value="0"></div>
+                <div class="input-group"><label>Lain-lain</label><input type="number" id="cLain" value="0"></div>
+            </div>
+
+            <div class="section-title">Margin</div>
+            <div class="input-group"><label>Profit (%)</label><input type="number" id="profitPct" value="0"></div>
+            <button class="btn" onclick="hitungUmroh()"><i class="fas fa-calculator"></i> HITUNG ESTIMASI</button>
         </div>
-        <button class="btn" onclick="tambah()" style="background:var(--accent)">TAMBAH TRANSAKSI</button>
-        <div class="summary-real" id="summary"></div>
-        <div class="table-container"><table><thead><tr><th>Tgl</th><th>Ket</th><th>Nom</th><th></th></tr></thead><tbody id="bodyKas"></tbody></table></div>
-        <button class="btn" onclick="downloadExcel()" style="background:#27ae60">💾 DOWNLOAD LAPORAN (.xlsx)</button>
-        <button class="btn" onclick="resetData()" style="background:var(--red); font-size:12px; margin-top:20px;">🗑️ KOSONGKAN BUKU KAS (PINDAH ROMBONGAN)</button>
-        <button class="btn" onclick="gantiPIN()" style="background:#95a5a6; font-size:11px; margin-top:10px;">🔑 GANTI PIN</button>
-        <button class="btn" onclick="resetPIN()" style="background:#f39c12; font-size:11px; margin-top:10px;">🔑 RESET PIN (LUPA)</button>
+        <div id="hasil" class="res-card"></div>
     </div>
-</div>
 
-<footer>&copy; 2026 Auva Kbihu AU</footer>
+    <div id="real" class="tab-content">
+        <div class="card">
+            <h2>Pencatatan REAL</h2>
+            <div class="section-title">Input Transaksi</div>
+            <input id="ketReal" placeholder="Keterangan" style="margin-bottom:10px;">
+            <div class="row">
+                <div style="flex:2"><input id="nomReal" type="number" placeholder="Nominal Rp"></div>
+                <div style="flex:1"><select id="tipeReal"><option value="masuk">In</option><option value="keluar">Out</option></select></div>
+            </div>
+            <button class="btn" onclick="tambah()" style="background:var(--accent)"><i class="fas fa-plus-circle"></i> TAMBAH TRANSAKSI</button>
+            <div class="summary-real" id="summary"></div>
+            <div class="table-container"><table><thead><tr><th>Tgl</th><th>Ket</th><th>Nom</th><th></th></tr></thead><tbody id="bodyKas"></tbody></table></div>
+            <button class="btn" onclick="downloadExcel()" style="background:#27ae60"><i class="fas fa-download"></i> DOWNLOAD LAPORAN (.xlsx)</button>
+            <button class="btn" onclick="resetData()" style="background:var(--red); font-size:12px; margin-top:20px;"><i class="fas fa-trash-alt"></i> KOSONGKAN BUKU KAS (PINDAH ROMBONGAN)</button>
+            <button class="btn" onclick="gantiPIN()" style="background:#95a5a6; font-size:11px; margin-top:10px;"><i class="fas fa-key"></i> GANTI PIN</button>
+            <button class="btn" onclick="resetPIN()" style="background:#f39c12; font-size:11px; margin-top:10px;"><i class="fas fa-undo"></i> RESET PIN (LUPA)</button>
+        </div>
+    </div>
+
+    <footer>&copy; 2026 Auva Kbihu AU</footer>
 
 <script>
 let dataKas=[];
@@ -160,9 +169,7 @@ function resetPIN(){
             localStorage.setItem('auva_pin', baru);
             alert("PIN Berhasil direset ke: " + baru);
         }
-    } else {
-        alert("KODE ADMIN SALAH! Gagal reset.");
-    }
+    } else { alert("KODE ADMIN SALAH! Gagal reset."); }
 }
 
 // --- FUNGSI TAB ---
@@ -182,13 +189,14 @@ function hitungUmroh(){
     const nFoc=parseInt(document.getElementById('jamGratis').value)||0;
     const nTL=parseInt(document.getElementById('numTL').value)||0;
     const pPct=(parseFloat(document.getElementById('profitPct').value)||0)/100;
-    
+          
     const profitKotor = (sub * nJam) * pPct;
     const biayaTL = sub * nTL;
     const bersih = profitKotor - biayaTL;
+    const profitPerPax = bersih / (nJam - nFoc);
     const jual = ((sub * nJam) + profitKotor) / (nJam - nFoc);
     const totalOmzet = jual * (nJam - nFoc);
-    
+          
     const f=n=>"Rp "+Math.round(n).toLocaleString('id-ID');
 
     let hasil = document.getElementById('hasil');
@@ -197,6 +205,7 @@ function hitungUmroh(){
         <div class="res-item"><span>Total Omzet Grup</span><b>${f(totalOmzet)}</b></div>
         <div class="res-item"><span>Profit Kotor Grup</span><span>${f(profitKotor)}</span></div>
         <div class="res-item"><span>Biaya TL</span><span>${f(biayaTL)}</span></div>
+        <div class="res-item"><span>Profit Per Pax</span><span>${f(profitPerPax)}</span></div>
         <div class="res-item" style="color:#2ecc71"><span>PROFIT BERSIH</span><b>${f(bersih)}</b></div>
         <div class="res-item" style="border-top:2px solid var(--accent); margin-top:10px; padding-top:10px; flex-direction: column; align-items: center;">
             <span style="font-weight:bold">HARGA BROSUR</span><span class="highlight">${f(jual)}</span>
@@ -204,19 +213,29 @@ function hitungUmroh(){
                 *Berdasarkan ${nJam - nFoc} jamaah bayar dan ${nFoc} gratis
             </p>
         </div>
-        <button class="btn" onclick="salinRingkasan()" style="background:#34495e; margin-top:15px; font-size:14px;">📋 SALIN RINGKASAN HARGA</button>`;
+        <button class="btn" onclick="salinRingkasan()" style="background:#34495e; margin-top:15px; font-size:14px;"><i class="fas fa-clipboard"></i> SALIN RINGKASAN HARGA</button>`;
     hasil.style.display='block';
     hasil.scrollIntoView({behavior: "smooth"});
 }
 
-// --- FUNGSI SALIN KE WA ---
+// --- FUNGSI SALIN KE WA (FORMAT BARU) ---
 function salinRingkasan() {
+    const lokasi = document.getElementById('lokasiPaket').value;
     const totalPax = document.getElementById('totJam').value;
     const hrg = document.querySelector('.highlight').innerText;
-    const teks = `*Ringkasan Estimasi Paket*\n--------------------------\n📍 *Auva Kbihu AU*\n👥 Total Jamaah: ${totalPax}\n💰 Harga per Pax: *${hrg}*\n--------------------------\n_Silakan hubungi admin untuk detail._`;
     
+    const garis = "━━━━━━━━━━━━━━━━━━";
+    const teks = 
+`🧾 *Ringkasan Estimasi Paket*
+${garis}
+📍 *${lokasi}*
+👥 *Total Jamaah:* ${totalPax}
+💰 *Harga per Pax:* *${hrg}*
+${garis}
+📞 *Silakan hubungi admin untuk detail.*`;
+
     navigator.clipboard.writeText(teks).then(() => {
-        alert("Ringkasan Harga telah disalin! Silakan Paste ke WhatsApp.");
+        alert("Ringkasan Harga Profesional telah disalin!");
     }).catch(err => {
         alert("Gagal menyalin: " + err);
     });
@@ -244,7 +263,7 @@ function render(){
     let masuk=0, keluar=0;
     dataKas.forEach(i=>{
         if(i.tipe==='masuk') masuk+=i.nom; else keluar+=i.nom;
-        body.innerHTML+=`<tr><td>${i.tgl}</td><td>${i.ket}</td><td class="${i.tipe==='masuk'?'txt-in':'txt-out'}">${i.nom.toLocaleString('id-ID')}</td><td><button class="btn-del" onclick="hapus(${i.id})">×</button></td></tr>`;
+        body.innerHTML+=`<tr><td>${i.tgl}</td><td>${i.ket}</td><td class="${i.tipe==='masuk'?'txt-in':'txt-out'}">${i.nom.toLocaleString('id-ID')}</td><td><button class="btn-del" onclick="hapus(${i.id})"><i class="fas fa-trash"></i></button></td></tr>`;
     });
     document.getElementById('summary').innerHTML=`<b>Saldo Akhir: Rp ${(masuk-keluar).toLocaleString('id-ID')}</b>`;
 }
