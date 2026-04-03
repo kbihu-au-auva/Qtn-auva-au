@@ -8,1216 +8,477 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Auva">
-    
     <title>Auva Kbihu AU</title>
-
-    <!-- MANIFEST INLINE -->
     <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Auva%20Kbihu%20AU%22,%22short_name%22:%22Auva%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%231a5d4a%22,%22theme_color%22:%22%231a5d4a%22,%22icons%22:[{%22src%22:%22https://img.icons8.com/color/192/kaaba.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22},{%22src%22:%22https://img.icons8.com/color/512/kaaba.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}">
-    
-    <!-- Icons -->
     <link rel="icon" href="https://img.icons8.com/color/96/kaaba.png">
     <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/kaaba.png">
-    
-    <!-- FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri&family=Segoe+UI&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
-    <!-- SheetJS untuk Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    
-    <!-- jsPDF untuk PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-
     <style>
-        :root { 
-            --primary: #1a5d4a; 
-            --accent: #c9a227; 
-            --bg: #f4f7f6; 
-            --white: #ffffff; 
-            --red: #e74c3c; 
-            --green: #2ecc71; 
-            --dark: #2c3e50;
-            --blue: #3498db;
-            --orange: #e67e22;
-            --purple: #9b59b6;
-        }
-        
-        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
-        
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-            background: var(--bg); 
-            padding: 10px; 
-            margin: 0; 
-            color: #333; 
-            overscroll-behavior: none;
-        }
-        
-        /* Splash Screen */
-        #splashScreen {
-            position: fixed;
-            inset: 0;
-            background: linear-gradient(135deg, var(--primary) 0%, #0d3328 100%);
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.5s ease;
-        }
-        
-        #splashScreen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .splash-logo {
-            width: 120px;
-            height: 120px;
-            background: white;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 30px;
-            animation: pulse 2s infinite;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        
-        .splash-logo img {
-            width: 80px;
-            height: 80px;
-        }
-        
-        .splash-text {
-            color: white;
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        
-        .splash-sub {
-            color: rgba(255,255,255,0.8);
-            font-size: 14px;
-        }
-        
-        .splash-loader {
-            width: 200px;
-            height: 4px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 2px;
-            margin-top: 40px;
-            overflow: hidden;
-        }
-        
-        .splash-loader-bar {
-            height: 100%;
-            width: 0%;
-            background: var(--accent);
-            border-radius: 2px;
-            animation: loading 2s ease-in-out;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        
-        @keyframes loading {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 100%; }
-        }
-        
-        /* Install Banner */
-        .install-banner {
-            display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--primary);
-            color: white;
-            padding: 15px 20px;
-            z-index: 10000;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
-        }
-        
-        .install-banner.show { display: flex; }
-        
-        .install-banner .text { flex: 1; }
-        .install-banner h4 { margin: 0 0 5px 0; }
-        .install-banner p { margin: 0; font-size: 12px; opacity: 0.9; }
-        
-        .install-banner .btn-install {
-            background: var(--accent);
-            color: #1a5d4a;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-right: 10px;
-        }
-        
-        .install-banner .btn-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-        }
-        
-        /* Offline Indicator */
-        .offline-indicator {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: #e74c3c;
-            color: white;
-            text-align: center;
-            padding: 8px;
-            font-size: 12px;
-            z-index: 9999;
-            animation: slideDown 0.3s ease;
-        }
-        
-        .offline-indicator.show { display: block; }
-        
-        @keyframes slideDown {
-            from { transform: translateY(-100%); }
-            to { transform: translateY(0); }
-        }
-        
-        .tab-menu { 
-            display: flex; 
-            max-width: 500px; 
-            margin: 0 auto 15px; 
-            background: #ddd; 
-            border-radius: 10px; 
-            overflow: hidden; 
-        }
-        
-        .tab-btn { 
-            flex: 1; 
-            padding: 15px; 
-            border: none; 
-            cursor: pointer; 
-            font-weight: bold; 
-            background: #ddd; 
-            color: #666; 
-            font-size: 14px; 
-            transition: all 0.3s;
-        }
-        
-        .tab-btn.active { 
-            background: var(--primary); 
-            color: white; 
-        }
-        
-        .card { 
-            background: var(--white); 
-            border-radius: 15px; 
-            padding: 20px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
-            max-width: 500px; 
-            margin: auto; 
-            border-top: 5px solid var(--primary); 
-            box-sizing: border-box; 
-        }
-        
+        :root { --primary: #1a5d4a; --accent: #c9a227; --bg: #f4f7f6; --white: #ffffff; --red: #e74c3c; --green: #2ecc71; --dark: #2c3e50; --blue: #3498db; --orange: #e67e22; --purple: #9b59b6; --teal: #1abc9c; --wa: #25d366; }
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: #333; padding-bottom: 70px; }
+        .page { display: none; min-height: 100vh; padding: 10px; padding-bottom: 80px; }
+        .page.active { display: block; }
+        .header-main { background: var(--primary); color: white; padding: 30px 20px; text-align: center; border-bottom: 4px solid var(--accent); border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; margin-bottom: 20px; }
+        .page-header { background: var(--primary); color: white; padding: 15px 20px; display: flex; align-items: center; gap: 15px; position: sticky; top: 0; z-index: 100; border-radius: 0 0 15px 15px; margin: -10px -10px 15px -10px; }
+        .back-btn { font-size: 1.5rem; cursor: pointer; width: 40px; background: none; border: none; color: white; }
+        .page-header h2 { flex: 1; margin: 0; font-size: 1.2rem; text-align: center; }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; max-width: 600px; margin: 0 auto; }
+        .menu-card { background: var(--white); border-radius: 15px; padding: 20px 10px; text-align: center; border: 1.5px solid var(--primary); box-shadow: 0 4px 8px rgba(0,0,0,0.05); cursor: pointer; position: relative; transition: all 0.3s; }
+        .menu-card:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
+        .menu-card:active { transform: scale(0.98); }
+        .menu-card div { font-size: 30px; margin-bottom: 5px; }
+        .menu-card span { font-weight: bold; color: var(--primary); font-size: 0.7rem; display: block; text-transform: uppercase; }
+        .edit-badge { position: absolute; top: 5px; right: 5px; background: var(--accent); color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; display: none; }
+        .admin-mode .edit-badge { display: block; }
+        .admin-mode .menu-card { border: 2px dashed var(--accent); }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #eee; padding: 10px 0; z-index: 1000; }
+        .nav-item { flex: 1; text-align: center; color: #888; font-size: 0.7rem; cursor: pointer; transition: all 0.3s; }
+        .nav-active { color: var(--primary); font-weight: bold; }
+        .card { background: var(--white); border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 500px; margin: auto; border-top: 5px solid var(--primary); }
         .logo-box { text-align: center; margin-bottom: 10px; }
-        
-        h2 { 
-            color: var(--primary); 
-            text-align: center; 
-            margin: 0; 
-            font-size: 1.4rem; 
-        }
-        
-        p.subtitle { 
-            text-align: center; 
-            color: #666; 
-            font-size: 0.9rem; 
-            margin-bottom: 20px; 
-            font-weight: bold; 
-        }
-        
-        .section-title { 
-            font-size: 0.75rem; 
-            text-transform: uppercase; 
-            color: var(--accent); 
-            margin-top: 15px; 
-            margin-bottom: 8px; 
-            font-weight: bold; 
-            border-bottom: 1px solid #eee; 
-            padding-bottom: 3px; 
-        }
-        
+        h2 { color: var(--primary); text-align: center; margin: 0; font-size: 1.4rem; }
+        p.subtitle { text-align: center; color: #666; font-size: 0.9rem; margin-bottom: 20px; font-weight: bold; }
+        .section-title { font-size: 0.75rem; text-transform: uppercase; color: var(--accent); margin-top: 15px; margin-bottom: 8px; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 3px; }
         .input-group { margin-bottom: 12px; }
-        
-        label { 
-            display: block; 
-            font-size: 0.8rem; 
-            font-weight: bold; 
-            margin-bottom: 4px; 
-            color: #555; 
-        }
-        
-        input, select { 
-            width: 100%; 
-            padding: 12px; 
-            border: 1px solid #ddd; 
-            border-radius: 8px; 
-            font-size: 15px; 
-            box-sizing: border-box; 
-            background: #fafafa; 
-            -webkit-appearance: none;
-        }
-        
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-        }
-        
+        label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; color: #555; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; box-sizing: border-box; background: #fafafa; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); background: white; }
         .row { display: flex; gap: 10px; margin-bottom: 5px; }
         .row > div { flex: 1; }
-        
-        .btn { 
-            width: 100%; 
-            padding: 15px; 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            border-radius: 10px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            font-size: 16px; 
-            margin-top: 15px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 8px; 
-            transition: transform 0.1s, opacity 0.2s;
-        }
-        
+        .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.1s, opacity 0.2s; }
         .btn:active { transform: scale(0.98); }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        
         .btn-blue { background: var(--blue) !important; }
         .btn-orange { background: var(--orange) !important; }
         .btn-purple { background: var(--purple) !important; }
+        .btn-teal { background: var(--teal) !important; }
+        .btn-wa { background: var(--wa) !important; }
         .btn-small { font-size: 13px; padding: 12px; }
-        
-        .res-card { 
-            background: var(--primary); 
-            color: white; 
-            padding: 20px; 
-            border-radius: 15px; 
-            display: none; 
-            margin: 15px auto; 
-            max-width: 500px; 
-            box-sizing: border-box; 
-            animation: slideUp 0.3s ease;
-        }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .res-item { 
-            display: flex; 
-            justify-content: space-between; 
-            padding: 10px 0; 
-            border-bottom: 1px solid rgba(255,255,255,0.1); 
-            font-size: 0.9rem; 
-        }
-        
-        .highlight { 
-            color: var(--accent); 
-            font-weight: bold; 
-            font-size: 1.4rem; 
-        }
-        
-        .summary-real { 
-            background: var(--dark); 
-            color: white; 
-            padding: 15px; 
-            border-radius: 10px; 
-            margin-top: 15px; 
-        }
-        
-        .table-container { 
-            overflow-x: auto; 
-            margin-top: 20px; 
-            background: white; 
-            border-radius: 10px; 
-        }
-        
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            font-size: 12px; 
-        }
-        
-        th { 
-            background: #eee; 
-            padding: 10px; 
-            text-align: left; 
-            position: sticky;
-            top: 0;
-        }
-        
-        td { 
-            padding: 10px; 
-            border-bottom: 1px solid #eee; 
-        }
-        
+        .btn-danger { background: var(--red) !important; }
+        .res-card { background: var(--primary); color: white; padding: 20px; border-radius: 15px; display: none; margin: 15px auto; max-width: 500px; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .res-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; }
+        .highlight { color: var(--accent); font-weight: bold; font-size: 1.4rem; }
+        .summary-real { background: var(--dark); color: white; padding: 15px; border-radius: 10px; margin-top: 15px; }
+        .table-container { overflow-x: auto; margin-top: 20px; background: white; border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        th { background: #eee; padding: 10px 8px; text-align: left; font-size: 10px; }
+        td { padding: 10px 8px; border-bottom: 1px solid #eee; }
         .txt-in { color: var(--green); font-weight: bold; }
         .txt-out { color: var(--red); font-weight: bold; }
-        
-        .btn-del { 
-            color: var(--red); 
-            border: none; 
-            background: none; 
-            font-weight: bold; 
-            font-size: 18px; 
-            cursor: pointer; 
-            width: 30px; 
-            height: 30px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            border-radius: 5px; 
-            transition: background 0.2s; 
-        }
-        
-        .btn-del:hover { background: rgba(231, 76, 60, 0.1); }
-        
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        
-        footer { 
-            text-align: center; 
-            font-size: 0.7rem; 
-            color: #999; 
-            margin-top: 20px; 
-            padding-bottom: 100px; 
-        }
-        
-        .toast {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: #333;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-size: 14px;
-            z-index: 10003;
-            opacity: 0;
-            transition: all 0.3s;
-        }
-        
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-        
-        .copy-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.9);
-            z-index: 10004;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        .copy-overlay.show { display: flex; }
-        
-        .copy-box {
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            width: 100%;
-            max-width: 400px;
-        }
-        
-        .copy-box h3 {
-            margin-top: 0;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .copy-box textarea {
-            width: 100%;
-            height: 250px;
-            border: 2px solid #ddd;
-            border-radius: 12px;
-            padding: 15px;
-            font-size: 14px;
-            resize: none;
-            margin: 15px 0;
-        }
-        
-        .copy-instruction {
-            background: #e8f5e9;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            color: #2e7d32;
-            margin-bottom: 15px;
-        }
-        
-        .btn-close-overlay {
-            background: var(--red);
-            color: white;
-            width: 100%;
-        }
-        
-        .backup-info {
-            background: #e3f2fd;
-            border-left: 4px solid var(--blue);
-            padding: 12px;
-            border-radius: 8px;
-            margin: 15px 0;
-            font-size: 12px;
-            color: #1565c0;
-        }
-        
-        .backup-info i {
-            margin-right: 5px;
-        }
-        
-        .sync-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 11px;
-            color: var(--green);
-            margin-left: 10px;
-        }
-        
-        .sync-status.offline {
-            color: var(--red);
-        }
+        .btn-del { color: var(--red); border: none; background: none; font-size: 18px; cursor: pointer; width: 30px; height: 30px; border-radius: 5px; }
+        .keg-tag { display: inline-block; background: var(--teal); color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; margin-bottom: 4px; }
+        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(100px); background: #333; color: white; padding: 12px 24px; border-radius: 25px; font-size: 14px; z-index: 10003; opacity: 0; transition: all 0.3s; }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .backup-info { background: #e3f2fd; border-left: 4px solid var(--blue); padding: 12px; border-radius: 8px; margin: 15px 0; font-size: 12px; color: #1565c0; }
+        .admin-panel { background: linear-gradient(135deg, var(--primary) 0%, #0d3328 100%); border-radius: 15px; padding: 15px; margin-bottom: 20px; color: white; }
+        .admin-panel .btn-admin { background: white; color: var(--primary); border: none; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-weight: bold; cursor: pointer; width: 100%; text-align: center; }
+        .jamaah-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; border-left: 4px solid var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .jamaah-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .jamaah-nama { font-size: 1rem; font-weight: bold; color: var(--primary); }
+        .jamaah-tgl { font-size: 0.7rem; color: #999; }
+        .jamaah-detail { font-size: 0.8rem; color: #555; margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee; }
+        .jamaah-detail-item { margin-bottom: 4px; }
+        .jamaah-actions { display: flex; gap: 8px; }
+        .jamaah-actions button { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 5px; border-radius: 6px; }
+        .btn-share-wa { color: var(--wa); }
+        .btn-edit-jamaah { color: var(--blue); }
+        .btn-delete-jamaah { color: var(--red); }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 20000; justify-content: center; align-items: center; padding: 20px; }
+        .modal.show { display: flex; }
+        .modal-content { background: white; border-radius: 20px; width: 100%; max-width: 500px; max-height: 85vh; overflow-y: auto; padding: 20px; }
+        .modal-content h3 { color: var(--primary); margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); }
+        .field-item { background: #f8f9fa; padding: 12px; margin-bottom: 10px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--primary); }
+        .btn-submit { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1rem; margin-top: 10px; }
+        .dynamic-field { margin-bottom: 15px; }
+        .dynamic-field label { display: block; margin-bottom: 6px; font-weight: bold; color: var(--primary); font-size: 0.85rem; }
+        .required-star { color: var(--red); margin-left: 3px; }
+        .list-item { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #eee; cursor: pointer; }
+        .item-num { background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; margin-right: 15px; }
+        .setting-box { background: white; padding: 15px; border-radius: 15px; border: 1px solid #eee; margin-bottom: 20px; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #27ae60; }
+        input:checked + .slider:before { transform: translateX(22px); }
+        .color-options { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+        .color-opt { width: 40px; height: 40px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; }
+        .btn-danger-small { background: var(--red); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+        .zakat-sumber-item { background: #f8f9fa; padding: 12px; margin-bottom: 12px; border-radius: 10px; border-left: 3px solid var(--primary); }
+        .sumber-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .btn-remove-sumber { background: var(--red); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+        .money-input { text-align: right; font-weight: normal; }
+        #splashScreen { position: fixed; inset: 0; background: linear-gradient(135deg, var(--primary) 0%, #0d3328 100%); z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
+        #splashScreen.hidden { opacity: 0; pointer-events: none; }
+        .splash-logo { width: 120px; height: 120px; background: white; border-radius: 30px; display: flex; align-items: center; justify-content: center; margin-bottom: 30px; animation: pulse 2s infinite; }
+        .splash-logo div { font-size: 70px; }
+        .splash-text { color: white; font-size: 28px; font-weight: bold; margin-bottom: 10px; }
+        .splash-sub { color: rgba(255,255,255,0.8); font-size: 14px; }
+        .splash-loader { width: 200px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin-top: 40px; overflow: hidden; }
+        .splash-loader-bar { height: 100%; width: 0%; background: var(--accent); border-radius: 2px; animation: loading 2s ease-in-out; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes loading { 0% { width: 0%; } 50% { width: 70%; } 100% { width: 100%; } }
+        .offline-indicator { display: none; position: fixed; top: 0; left: 0; right: 0; background: #e74c3c; color: white; text-align: center; padding: 8px; font-size: 12px; z-index: 9999; }
+        .offline-indicator.show { display: block; }
+        .install-banner { display: none; position: fixed; bottom: 70px; left: 0; right: 0; background: var(--primary); color: white; padding: 15px 20px; z-index: 10000; align-items: center; justify-content: space-between; }
+        .install-banner.show { display: flex; }
+        .install-banner .btn-install { background: var(--accent); color: #1a5d4a; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .install-banner .btn-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
     </style>
 </head>
-
 <body onload="initApp()">
-    <!-- Splash Screen -->
-    <div id="splashScreen">
-        <div class="splash-logo">
-            <img src="https://img.icons8.com/color/96/kaaba.png" alt="Auva">
-        </div>
-        <div class="splash-text">Auva</div>
-        <div class="splash-sub">Kbihu AU</div>
-        <div class="splash-loader">
-            <div class="splash-loader-bar"></div>
-        </div>
-    </div>
-
-    <!-- Offline Indicator -->
-    <div id="offlineIndicator" class="offline-indicator">
-        <i class="fas fa-wifi-slash"></i> Anda sedang offline. Data tetap tersimpan lokal.
-    </div>
-
-    <!-- Install Banner -->
-    <div id="installBanner" class="install-banner">
-        <div class="text">
-            <h4><i class="fas fa-kaaba"></i> Install Auva</h4>
-            <p>Tambahkan ke layar utama untuk akses cepat</p>
-        </div>
-        <button class="btn-install" onclick="installApp()">Install</button>
-        <button class="btn-close" onclick="closeInstallBanner()">&times;</button>
-    </div>
-
-    <!-- Manual Copy Overlay -->
-    <div id="copyOverlay" class="copy-overlay">
-        <div class="copy-box">
-            <h3><i class="fas fa-copy"></i> Salin Ringkasan</h3>
-            <div class="copy-instruction">
-                <i class="fas fa-info-circle"></i> 
-                Tekan dan tahan text di bawah, lalu pilih "Salin"
-            </div>
-            <textarea id="manualCopyText" readonly></textarea>
-            <button class="btn btn-close-overlay" onclick="closeCopyOverlay()">
-                <i class="fas fa-check"></i> Selesai
-            </button>
-        </div>
-    </div>
-
-    <div class="tab-menu">
-        <button class="tab-btn active" onclick="openTab('estimasi', this)">ESTIMASI</button>
-        <button class="tab-btn" onclick="openTab('real', this)">KAS REAL</button>
-    </div>
-
-    <div id="estimasi" class="tab-content active">
-        <div class="card">
-            <div class="logo-box"><img src="https://img.icons8.com/color/96/kaaba.png" style="width:80px;"></div>
-            <h2>Estimasi Biaya Umroh</h2>
-            <p class="subtitle">Auva Kbihu AU</p>
-            
-            <div class="section-title">Data Rombongan</div>
-            <div class="input-group">
-                <label>Nama Paket / Lokasi</label>
-                <input type="text" id="lokasiPaket" value="Umroh Syawal - Auva Kbihu AU">
-            </div>
-            <div class="row">
-                <div class="input-group"><label>Total Pax</label><input type="number" id="totJam" value="35"></div>
-                <div class="input-group"><label>Gratis</label><input type="number" id="jamGratis" value="1"></div>
-                <div class="input-group"><label>Jumlah TL</label><input type="number" id="numTL" value="1"></div>
-            </div>
-
-            <div class="section-title">Komponen Biaya</div>
-            <div class="row">
-                <div class="input-group"><label>Tiket</label><input type="number" id="cTiket" value="15450000"></div>
-                <div class="input-group"><label>LA / Hotel</label><input type="number" id="cLA" value="14450000"></div>
-            </div>
-            <div class="row">
-                <div class="input-group"><label>Asuransi</label><input type="number" id="cAsuransi" value="60000"></div>
-                <div class="input-group"><label>Handling</label><input type="number" id="cHandling" value="100000"></div>
-            </div>
-            <div class="row">
-                <div class="input-group"><label>Perlengkapan</label><input type="number" id="cAlat" value="1000000"></div>
-                <div class="input-group"><label>Aplikasi</label><input type="number" id="cAplikasi" value="60000"></div>
-            </div>
-            <div class="row">
-                <div class="input-group"><label>Diskon/PIC</label><input type="number" id="cPIC" value="0"></div>
-                <div class="input-group"><label>Lain-lain</label><input type="number" id="cLain" value="0"></div>
-            </div>
-
-            <div class="section-title">Margin</div>
-            <div class="input-group"><label>Profit (%)</label><input type="number" id="profitPct" value="0"></div>
-            <button class="btn" onclick="hitungUmroh()">
-                <i class="fas fa-calculator"></i> HITUNG ESTIMASI
-            </button>
-        </div>
-        <div id="hasil" class="res-card"></div>
-    </div>
-
-    <div id="real" class="tab-content">
-        <div class="card">
-            <h2>Pencatatan REAL 
-                <span id="syncStatus" class="sync-status">
-                    <i class="fas fa-check-circle"></i> Online
-                </span>
-            </h2>
-            <div class="section-title">Input Transaksi</div>
-            <input id="ketReal" placeholder="Keterangan" style="margin-bottom:10px;">
-            <div class="row">
-                <div style="flex:2"><input id="nomReal" type="number" placeholder="Nominal Rp"></div>
-                <div style="flex:1"><select id="tipeReal"><option value="masuk">In</option><option value="keluar">Out</option></select></div>
-            </div>
-            <button class="btn" onclick="tambah()" style="background:var(--accent)">
-                <i class="fas fa-plus-circle"></i> TAMBAH TRANSAKSI
-            </button>
-            <div class="summary-real" id="summary"></div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr><th>Tgl</th><th>Ket</th><th>Nom</th><th></th></tr>
-                    </thead>
-                    <tbody id="bodyKas"></tbody>
-                </table>
-            </div>
-            
-            <!-- BACKUP & RESTORE SECTION -->
-            <div class="section-title">Backup & Restore Data</div>
-            <div class="backup-info">
-                <i class="fas fa-info-circle"></i>
-                <strong>Backup:</strong> Simpan semua data kas ke file.<br>
-                <i class="fas fa-info-circle" style="visibility:hidden"></i>
-                <strong>Restore:</strong> Pulihkan data dari file backup.
-            </div>
-            <div class="row">
-                <button class="btn btn-blue btn-small" onclick="backupData()" style="flex:1; margin-top:0;">
-                    <i class="fas fa-download"></i> BACKUP
-                </button>
-                <button class="btn btn-orange btn-small" onclick="document.getElementById('restoreFile').click()" style="flex:1; margin-top:0;">
-                    <i class="fas fa-upload"></i> RESTORE
-                </button>
-            </div>
-            <input type="file" id="restoreFile" accept=".auvabackup,.json" style="display:none" onchange="restoreData(this)">
-            
-            <!-- EXPORT SECTION -->
-            <div class="section-title">Export Laporan</div>
-            <div class="row">
-                <button class="btn btn-purple btn-small" onclick="exportPDF()" style="flex:1; margin-top:0;">
-                    <i class="fas fa-file-pdf"></i> PDF
-                </button>
-                <button class="btn btn-small" onclick="downloadExcel()" style="flex:1; margin-top:0; background:#27ae60;">
-                    <i class="fas fa-file-excel"></i> EXCEL
-                </button>
-            </div>
-            
-            <button class="btn" onclick="resetData()" style="background:var(--red); font-size:12px; margin-top:20px;">
-                <i class="fas fa-trash-alt"></i> KOSONGKAN BUKU KAS (PINDAH ROMBONGAN)
-            </button>
-        </div>
-    </div>
-
-    <footer>&copy; 2026 Auva Kbihu AU</footer>
-    
+    <div id="splashScreen"><div class="splash-logo"><div>🕋</div></div><div class="splash-text">Auva</div><div class="splash-sub">Kbihu AU</div><div class="splash-loader"><div class="splash-loader-bar"></div></div></div>
+    <div id="offlineIndicator" class="offline-indicator">⚠️ Anda sedang offline. Data tetap tersimpan lokal.</div>
+    <div id="installBanner" class="install-banner"><div class="text"><h4>📱 Install Auva</h4><p>Tambahkan ke layar utama untuk akses cepat</p></div><button class="btn-install" onclick="installApp()">Install</button><button class="btn-close" onclick="closeInstallBanner()">✕</button></div>
     <div id="toast" class="toast"></div>
+
+    <!-- HOME PAGE -->
+    <div id="page-home" class="page active"><div class="header-main"><div style="font-size:50px;">🕋</div><h2>AUVA KBIHU AU</h2><p style="color:var(--accent); font-weight:bold;">by Kbihu Amanatul Ummah</p></div><div class="menu-grid" id="menuGrid"></div></div>
+
+    <!-- ESTIMASI PAGE -->
+    <div id="page-estimasi" class="page"><div class="page-header"><button class="back-btn" onclick="showPage('home')">←</button><h2>Estimasi Biaya Umroh</h2><div style="width:40px;"></div></div><div class="card"><div class="logo-box"><img src="https://img.icons8.com/color/96/kaaba.png" style="width:60px;"></div><p class="subtitle">Auva Kbihu AU</p><div class="section-title">Data Rombongan</div><div class="input-group"><label>Nama Paket / Lokasi</label><input type="text" id="lokasiPaket" value="Umroh Syawal - Auva Kbihu AU"></div><div class="row"><div class="input-group"><label>Total Pax</label><input type="number" id="totJam" value="35"></div><div class="input-group"><label>Gratis</label><input type="number" id="jamGratis" value="1"></div><div class="input-group"><label>Jumlah TL</label><input type="number" id="numTL" value="1"></div></div><div class="section-title">Komponen Biaya</div><div class="row"><div class="input-group"><label>Tiket</label><input type="text" id="cTiket" class="money-input" value="15.450.000"></div><div class="input-group"><label>LA / Hotel</label><input type="text" id="cLA" class="money-input" value="14.450.000"></div></div><div class="row"><div class="input-group"><label>Asuransi</label><input type="text" id="cAsuransi" class="money-input" value="60.000"></div><div class="input-group"><label>Handling</label><input type="text" id="cHandling" class="money-input" value="100.000"></div></div><div class="row"><div class="input-group"><label>Perlengkapan</label><input type="text" id="cAlat" class="money-input" value="1.000.000"></div><div class="input-group"><label>Aplikasi</label><input type="text" id="cAplikasi" class="money-input" value="60.000"></div></div><div class="row"><div class="input-group"><label>Diskon/PIC</label><input type="text" id="cPIC" class="money-input" value="0"></div><div class="input-group"><label>Lain-lain</label><input type="text" id="cLain" class="money-input" value="0"></div></div><div class="section-title">Margin</div><div class="input-group"><label>Profit (%)</label><input type="number" id="profitPct" value="0"></div><button class="btn" onclick="hitungUmroh()"><i class="fas fa-calculator"></i> HITUNG ESTIMASI</button></div><div id="hasilEstimasi" class="res-card"></div></div>
+
+    <!-- KAS PAGE -->
+    <div id="page-kas" class="page"><div class="page-header"><button class="back-btn" onclick="showPage('home')">←</button><h2>Uang Kas</h2><div style="width:40px;"></div></div><div class="card"><div class="section-title">Kegiatan / Nama Rombongan</div><div class="input-group"><input type="text" id="kegiatan" placeholder="Contoh: Umroh Syawal 2026" value="Umroh Syawal 2026"></div><div class="section-title">Input Transaksi</div><div class="input-group"><input type="text" id="ketReal" placeholder="Keterangan detail transaksi"></div><div class="row"><div style="flex:2"><input id="nomReal" type="text" class="money-input" placeholder="Nominal Rp"></div><div style="flex:1"><select id="tipeReal"><option value="masuk">Masuk</option><option value="keluar">Keluar</option></select></div></div><button class="btn" onclick="tambahTransaksi()" style="background:var(--accent)"><i class="fas fa-plus-circle"></i> TAMBAH TRANSAKSI</button><button class="btn btn-teal" onclick="buatLaporanWA()"><i class="fab fa-whatsapp"></i> BUAT LAPORAN WA</button><div class="summary-real" id="summaryKas"></div><div class="table-container"><table><thead><tr><th>Tgl</th><th>Kegiatan</th><th>Ket</th><th>Nominal</th><th></th></tr></thead><tbody id="bodyKas"></tbody></table></div><div id="hasilWA" class="res-card"></div><div class="section-title">Backup & Restore Data Kas</div><div class="backup-info"><i class="fas fa-info-circle"></i> Backup & Restore data transaksi kas</div><div class="row"><button class="btn btn-blue btn-small" onclick="backupKasData()" style="flex:1"><i class="fas fa-download"></i> BACKUP KAS</button><button class="btn btn-orange btn-small" onclick="document.getElementById('restoreKasFile').click()" style="flex:1"><i class="fas fa-upload"></i> RESTORE KAS</button></div><input type="file" id="restoreKasFile" accept=".json" style="display:none" onchange="restoreKasData(this)"><div class="section-title">Export Laporan Kas</div><div class="row"><button class="btn btn-purple btn-small" onclick="exportKasPDF()" style="flex:1"><i class="fas fa-file-pdf"></i> PDF</button><button class="btn btn-small" onclick="exportKasExcel()" style="flex:1; background:#27ae60;"><i class="fas fa-file-excel"></i> EXCEL</button></div><button class="btn btn-danger" onclick="resetKasData()" style="font-size:12px"><i class="fas fa-trash-alt"></i> KOSONGKAN BUKU KAS</button></div></div>
+
+    <!-- DATA JAMAAH PAGE -->
+    <div id="page-jamaah" class="page"><div class="page-header"><button class="back-btn" onclick="showPage('home')">←</button><h2>Data Jamaah</h2><div style="width:40px;"></div></div><div class="card"><div id="jamaahAdminPanel" class="admin-panel" style="display:none"><h3>🔧 Panel Admin Jamaah</h3><button class="btn-admin" onclick="openTambahJamaahModal()">📝 + Tambah Data Jamaah</button><button class="btn-admin" onclick="openManageFieldsModal()">⚙️ Kelola Field Dinamis</button><button class="btn-admin" onclick="exportJamaahToExcel()">📊 Export ke Excel</button><button class="btn-admin" onclick="document.getElementById('importExcelFile').click()">📥 IMPORT EXCEL</button><input type="file" id="importExcelFile" accept=".xlsx,.xls" style="display:none" onchange="importJamaahFromExcel(this)"></div><div class="section-title">DAFTAR JAMAAH</div><div id="jamaahListContainer"></div><button class="btn btn-wa" onclick="shareAllJamaahToWA()"><i class="fab fa-whatsapp"></i> SHARE SEMUA JAMAAH KE WA</button><div class="section-title" style="margin-top:20px;">Backup & Restore Data Jamaah</div><div class="backup-info"><i class="fas fa-info-circle"></i> Backup & Restore data jamaah dan field dinamis</div><div class="row"><button class="btn btn-blue btn-small" onclick="backupJamaahData()" style="flex:1"><i class="fas fa-download"></i> BACKUP JAMAAH</button><button class="btn btn-orange btn-small" onclick="document.getElementById('restoreJamaahFile').click()" style="flex:1"><i class="fas fa-upload"></i> RESTORE JAMAAH</button></div><input type="file" id="restoreJamaahFile" accept=".json" style="display:none" onchange="restoreJamaahData(this)"></div></div>
+
+    <!-- JAMAAH KITA PAGE -->
+    <div id="page-jamaahkita" class="page"><div class="page-header"><button class="back-btn" onclick="showPage('home')">←</button><h2>Jamaah Kita</h2><div style="width:40px;"></div></div><div class="card"><div id="jamaahKitaAdminPanel" class="admin-panel" style="display:none"><h3>🔧 Pengaturan Jamaah Kita</h3><button class="btn-admin" onclick="openJamaahKitaFieldModal()">⚙️ Kelola Field Dinamis (Kamar/Bus/dll)</button></div><div class="section-title">TAMBAH DATA JAMAAH KITA</div><div class="input-group"><label>Pilih Jamaah dari Data Jamaah</label><select id="pilihJamaahKita"></select></div><div id="jamaahKitaDynamicFields"></div><button class="btn" onclick="tambahJamaahKita()" style="background:var(--accent)"><i class="fas fa-plus-circle"></i> TAMBAHKAN KE JAMAAH KITA</button><div class="section-title">DAFTAR JAMAAH KITA</div><div id="jamaahKitaListContainer"></div><button class="btn btn-wa" onclick="shareAllJamaahKitaToWA()"><i class="fab fa-whatsapp"></i> SHARE SEMUA JAMAAH KITA KE WA</button><div class="section-title">Backup & Restore Data Jamaah Kita</div><div class="backup-info"><i class="fas fa-info-circle"></i> Backup & Restore data jamaah kita</div><div class="row"><button class="btn btn-blue btn-small" onclick="backupJamaahKitaData()" style="flex:1"><i class="fas fa-download"></i> BACKUP JAMAAH KITA</button><button class="btn btn-orange btn-small" onclick="document.getElementById('restoreJamaahKitaFile').click()" style="flex:1"><i class="fas fa-upload"></i> RESTORE JAMAAH KITA</button></div><input type="file" id="restoreJamaahKitaFile" accept=".json" style="display:none" onchange="restoreJamaahKitaData(this)"></div></div>
+
+    <!-- CATATAN PAGE -->
+    <div id="page-catatan" class="page"><div class="page-header"><button class="back-btn" onclick="showPage('home')">←</button><h2>Catatan</h2><button class="back-btn" onclick="openTambahCatatan()" style="font-size:1.2rem;">+</button></div><div class="container" style="padding:15px; max-width:500px; margin:0 auto;"><div id="catatanListContainer"></div></div></div>
+
+    <!-- ZAKAT PAGE -->
+    <div id="page-zakat" class="page"><div class="page-header"><button class="back-btn" onclick="showPage('home')">←</button><h2>Kalkulator Zakat</h2><div style="width:40px;"></div></div><div class="card"><div class="logo-box"><div style="font-size:40px;">📊</div></div><p class="subtitle">Auva Kbihu AU</p><div class="section-title">Pengaturan Umum</div><div class="row"><div class="input-group"><label>Jenis Zakat</label><select id="jenisZakat" onchange="toggleZakatInput()"><option value="mal">Zakat Mal (Harta/Uang)</option><option value="pertanian">Zakat Pertanian</option><option value="perdagangan">Zakat Perdagangan</option></select></div></div><div id="zakatGlobalInput"><div class="input-group"><label>Harga Emas per Gram (Rp)</label><input type="text" id="hargaEmas" class="money-input" value="1.200.000"></div></div><div class="section-title">Sumber Harta</div><div id="sumberHartaContainer"></div><button class="btn" onclick="tambahSumberHarta()" style="background:var(--accent); margin-top:10px;"><i class="fas fa-plus-circle"></i> + TAMBAH SUMBER HARTA</button><button class="btn" onclick="hitungZakat()"><i class="fas fa-calculator"></i> HITUNG ZAKAT</button></div><div id="hasilZakat" class="res-card"></div></div>
+
+    <!-- SETTING PAGE -->
+    <div id="page-setting" class="page"><div class="page-header"><button class="back-btn" onclick="showPage('home')">←</button><h2>Pengaturan</h2><div style="width:40px;"></div></div><div class="container" style="padding:15px; max-width:500px; margin:0 auto;"><div class="setting-box"><div class="setting-row"><span>🔧 Mode Admin (Edit Konten & Menu)</span><label class="switch"><input type="checkbox" id="adminMode" onchange="toggleAdminMode()"><span class="slider"></span></label></div></div><div class="setting-box"><h4 style="margin-bottom:10px">🎨 Warna Tema</h4><div class="color-options" id="colorOptions"></div></div><div class="setting-box"><h4 style="margin-bottom:10px">📋 Atur Tampilan Menu</h4><div id="menuSettingsContainer"></div></div><button class="btn btn-danger" onclick="resetAllData()">🔄 RESET SEMUA DATA</button></div></div>
+
+    <!-- MODALS -->
+    <div id="jamaahModal" class="modal"><div class="modal-content"><h3 id="jamaahModalTitle">Tambah Data Jamaah</h3><div id="jamaahFormContainer"></div><button class="btn-submit" onclick="saveJamaah()">💾 SIMPAN</button><button class="btn" style="background:var(--red); margin-top:10px;" onclick="closeJamaahModal()">BATAL</button></div></div>
+    <div id="fieldModal" class="modal"><div class="modal-content"><h3>Tambah Field Dinamis</h3><div class="dynamic-field"><label>Nama Field <span class="required-star">*</span></label><input type="text" id="newFieldName" placeholder="Contoh: tanggal_lahir, pekerjaan, no_hp"><div class="error-message" id="fieldNameError">Hanya huruf kecil, angka, dan underscore (_)</div></div><div class="dynamic-field"><label>Label Field <span class="required-star">*</span></label><input type="text" id="newFieldLabel" placeholder="Contoh: Tanggal Lahir, Pekerjaan, No HP"></div><div class="dynamic-field"><label>Tipe Field</label><select id="newFieldType"><option value="text">Text</option><option value="date">Tanggal</option><option value="tel">Telepon</option><option value="textarea">Text Area</option></select></div><button class="btn-submit" onclick="addDynamicFieldJamaah()">➕ TAMBAH FIELD</button><button class="btn" style="background:var(--red); margin-top:10px;" onclick="closeFieldModal()">BATAL</button></div></div>
+    <div id="manageFieldsModal" class="modal"><div class="modal-content"><h3>Kelola Field Dinamis</h3><button class="btn-admin" style="background:var(--primary); color:white; margin-bottom:15px;" onclick="closeManageFieldsModal(); openFieldModal();">+ Tambah Field Baru</button><div id="fieldsListContainer"></div><button class="btn" style="background:var(--primary); margin-top:15px;" onclick="closeManageFieldsModal()">TUTUP</button></div></div>
+    <div id="jamaahKitaFieldModal" class="modal"><div class="modal-content"><h3>Kelola Field Dinamis (Jamaah Kita)</h3><div class="dynamic-field"><label>Nama Field <span class="required-star">*</span></label><input type="text" id="jamaahKitaNewFieldName" placeholder="Contoh: kamar, bus, makanan"><div class="error-message" id="jamaahKitaFieldNameError">Hanya huruf kecil, angka, dan underscore (_)</div></div><div class="dynamic-field"><label>Label Field <span class="required-star">*</span></label><input type="text" id="jamaahKitaNewFieldLabel" placeholder="Contoh: Kamar, Bus, Makanan"></div><div class="dynamic-field"><label>Tipe Field</label><select id="jamaahKitaNewFieldType"><option value="text">Text</option><option value="number">Number</option><option value="tel">Telepon</option><option value="textarea">Text Area</option></select></div><button class="btn-submit" onclick="addJamaahKitaDynamicField()">➕ TAMBAH FIELD</button><div id="jamaahKitaFieldsListContainer" style="margin-top:20px;"></div><button class="btn" style="background:var(--primary); margin-top:15px;" onclick="closeJamaahKitaFieldModal()">TUTUP</button></div></div>
+    <div id="entryModal" class="modal"><div class="modal-content"><h3 id="entryModalTitle">Tambah Catatan</h3><input type="text" id="entryJudul" placeholder="Judul" style="margin-bottom:10px;"><textarea id="entryIsi" rows="10" placeholder="Isi..."></textarea><button class="btn-submit" onclick="saveCatatanEntry()">💾 SIMPAN</button><button class="btn" style="background:var(--red); margin-top:10px;" onclick="closeEntryModal()">BATAL</button></div></div>
+    <div id="detailModal" class="modal"><div class="modal-content"><h3 id="detailJudul"></h3><div id="detailIsi" style="margin:15px 0; white-space:pre-wrap;"></div><button class="btn btn-wa" onclick="shareDetailToWA()">💬 KIRIM KE WA</button><button class="btn" style="background:var(--red); margin-top:10px;" onclick="closeDetailModal()">TUTUP</button></div></div>
+
+    <!-- BOTTOM NAVIGATION -->
+    <div class="bottom-nav"><div class="nav-item nav-active" onclick="showPage('home')">🏠<br>Home</div><div class="nav-item" onclick="showPage('estimasi')">📊<br>Estimasi</div><div class="nav-item" onclick="showPage('kas')">💰<br>Kas</div><div class="nav-item" onclick="showPage('jamaah')">👥<br>Jamaah</div><div class="nav-item" onclick="showPage('setting')">⚙️<br>Setting</div></div>
 
 <script>
 // ==================== SERVICE WORKER ====================
-const SW_CODE = `
-const CACHE_NAME = 'auva-v1';
-const STATIC_ASSETS = [
-    '/',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css',
-    'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js',
-    'https://img.icons8.com/color/96/kaaba.png'
-];
+const SW_CODE_STABLE = `const CACHE_NAME='auva-v6';const STATIC_ASSETS=['/','https://fonts.googleapis.com/css2?family=Amiri&family=Segoe+UI&display=swap','https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css','https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js','https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js','https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js','https://img.icons8.com/color/96/kaaba.png'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(async c=>{try{await c.addAll(STATIC_ASSETS);}catch(e){}}));self.skipWaiting();});self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;if(e.request.url.startsWith('chrome-extension://'))return;e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request).catch(()=>new Response('Offline mode'))));});`;
+function registerServiceWorker() { if(!('serviceWorker' in navigator)) return; const blob = new Blob([SW_CODE_STABLE], { type:'application/javascript' }); navigator.serviceWorker.register(URL.createObjectURL(blob), { scope:'/' }).catch(e=>console.log(e)); }
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', registerServiceWorker); else registerServiceWorker();
 
-self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(STATIC_ASSETS);
-        })
-    );
-    self.skipWaiting();
-});
-
-self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames
-                    .filter((name) => name !== CACHE_NAME)
-                    .map((name) => caches.delete(name))
-            );
-        })
-    );
-    self.clients.claim();
-});
-
-self.addEventListener('fetch', (event) => {
-    // Skip non-GET requests
-    if (event.request.method !== 'GET') return;
-    
-    // Skip chrome-extension requests
-    if (event.request.url.startsWith('chrome-extension://')) return;
-    
-    event.respondWith(
-        caches.match(event.request).then((cached) => {
-            if (cached) {
-                return cached;
-            }
-            return fetch(event.request)
-                .then((response) => {
-                    // Don't cache if not valid response
-                    if (!response || response.status !== 200 || response.type !== 'basic') {
-                        return response;
-                    }
-                    const responseToCache = response.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, responseToCache);
-                    });
-                    return response;
-                })
-                .catch(() => {
-                    // Return offline fallback if available
-                    return new Response('Offline mode - Data tersimpan lokal');
-                });
-        })
-    );
-});
-`;
-
-// Register Service Worker
-if ('serviceWorker' in navigator) {
-    const blob = new Blob([SW_CODE], { type: 'application/javascript' });
-    const swUrl = URL.createObjectURL(blob);
-    
-    navigator.serviceWorker.register(swUrl)
-        .then((registration) => {
-            console.log('SW registered:', registration);
-        })
-        .catch((error) => {
-            console.log('SW registration failed:', error);
-        });
-}
-
-// ==================== APP LOGIC ====================
-let dataKas=[];
+// ==================== UTILITY FUNCTIONS ====================
 let deferredPrompt = null;
-let lastCalculatedText = '';
+function showToast(msg) { const toast = document.getElementById('toast'); toast.textContent = msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),3000); }
+function escapeHtml(text) { if(!text) return ''; return text.replace(/[&<>]/g, function(m) { if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }); }
+function formatRupiah(angka) { if(!angka) return '0'; return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+function parseRupiah(str) { if(!str) return 0; let cleaned = str.toString().replace(/\./g, ''); let num = parseInt(cleaned, 10); return isNaN(num) ? 0 : num; }
 
-// PWA - Install Prompt
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    showInstallBanner();
+// Format semua input dengan class money-input saat ketik
+document.addEventListener('input', function(e) {
+    if(e.target.classList && e.target.classList.contains('money-input')) {
+        let value = e.target.value.replace(/\./g, '');
+        let num = parseInt(value, 10);
+        if(!isNaN(num)) e.target.value = num.toLocaleString('id-ID');
+        else if(value === '') e.target.value = '';
+    }
 });
 
-window.addEventListener('appinstalled', () => {
-    deferredPrompt = null;
-    hideInstallBanner();
-    showToast('Auva berhasil di-install!');
-});
+// ==================== PAGE NAVIGATION ====================
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById(`page-${pageId}`).classList.add('active');
+    window.scrollTo(0,0);
+    document.querySelectorAll('.nav-item').forEach(item=>item.classList.remove('nav-active'));
+    const navMap = { home:0, estimasi:1, kas:2, jamaah:3, setting:4 };
+    const idx = navMap[pageId];
+    if(idx!==undefined) document.querySelectorAll('.nav-item')[idx]?.classList.add('nav-active');
+    if(pageId==='jamaah') { renderJamaahList(); const panel = document.getElementById('jamaahAdminPanel'); if(panel) panel.style.display = isAdminMode ? 'block' : 'none'; }
+    if(pageId==='jamaahkita') { renderPilihJamaahKita(); renderJamaahKitaList(); const panel = document.getElementById('jamaahKitaAdminPanel'); if(panel) panel.style.display = isAdminMode ? 'block' : 'none'; renderJamaahKitaDynamicFieldsForm(); }
+    if(pageId==='catatan') renderCatatanList();
+    if(pageId==='kas') renderKasTable();
+    if(pageId==='home') renderMenuGrid();
+    if(pageId==='zakat') { if(sumberHartaList.length===0) tambahSumberHarta(); renderSumberHartaList(); }
+}
 
-// Online/Offline Detection
-window.addEventListener('online', () => {
-    document.getElementById('offlineIndicator').classList.remove('show');
-    updateSyncStatus(true);
-    showToast('🌐 Kembali online!');
-});
-
-window.addEventListener('offline', () => {
-    document.getElementById('offlineIndicator').classList.add('show');
-    updateSyncStatus(false);
-    showToast('📴 Mode offline - data tetap tersimpan');
-});
-
-function updateSyncStatus(isOnline) {
-    const status = document.getElementById('syncStatus');
-    if (isOnline) {
-        status.innerHTML = '<i class="fas fa-check-circle"></i> Online';
-        status.classList.remove('offline');
+// ==================== GRID MENU ====================
+let isAdminMode = false;
+const menuItems = [
+    { id: 'estimasi', icon: '💰', label: 'Estimasi Biaya', default: true },
+    { id: 'kas', icon: '📊', label: 'Uang Kas', default: true },
+    { id: 'jamaah', icon: '👥', label: 'Data Jamaah', default: true },
+    { id: 'jamaahkita', icon: '👥', label: 'Jamaah Kita', default: true },
+    { id: 'catatan', icon: '📝', label: 'Catatan', default: true },
+    { id: 'zakat', icon: '📊', label: 'Zakat', default: true }
+];
+function renderMenuGrid() {
+    const container = document.getElementById('menuGrid');
+    if(!container) return;
+    let html = '';
+    for(const menu of menuItems) {
+        const isVisible = localStorage.getItem(`menu_${menu.id}_visible`) !== 'false';
+        if(!isVisible && !isAdminMode) continue;
+        html += `<div class="menu-card" onclick="showPage('${menu.id}')"><div>${menu.icon}</div><span>${menu.label}</span><span class="edit-badge">✏️</span></div>`;
+    }
+    container.innerHTML = html;
+}
+function toggleAdminMode() {
+    isAdminMode = document.getElementById('adminMode').checked;
+    localStorage.setItem('auva_admin_mode', isAdminMode);
+    if(isAdminMode) {
+        document.body.classList.add('admin-mode');
+        renderMenuGrid();
+        renderMenuSettings();
+        const jp = document.getElementById('jamaahAdminPanel'); if(jp) jp.style.display = 'block';
+        const jkp = document.getElementById('jamaahKitaAdminPanel'); if(jkp) jkp.style.display = 'block';
+        showToast('Mode Admin Aktif');
     } else {
-        status.innerHTML = '<i class="fas fa-wifi-slash"></i> Offline';
-        status.classList.add('offline');
+        document.body.classList.remove('admin-mode');
+        renderMenuGrid();
+        const jp = document.getElementById('jamaahAdminPanel'); if(jp) jp.style.display = 'none';
+        const jkp = document.getElementById('jamaahKitaAdminPanel'); if(jkp) jkp.style.display = 'none';
+        showToast('Mode Admin Nonaktif');
     }
 }
-
-function showInstallBanner() {
-    if (!window.matchMedia('(display-mode: standalone)').matches) {
-        document.getElementById('installBanner').classList.add('show');
+function renderMenuSettings() {
+    const container = document.getElementById('menuSettingsContainer');
+    if(!container) return;
+    let html = '';
+    for(const menu of menuItems) {
+        const isVisible = localStorage.getItem(`menu_${menu.id}_visible`) !== 'false';
+        html += `<div class="setting-row"><span>${menu.icon} ${menu.label}</span><label class="switch"><input type="checkbox" id="menu_${menu.id}" ${isVisible ? 'checked' : ''} onchange="toggleMenuVisibility('${menu.id}')"><span class="slider"></span></label></div>`;
     }
+    container.innerHTML = html;
 }
+function toggleMenuVisibility(menuId) { const isChecked = document.getElementById(`menu_${menuId}`).checked; localStorage.setItem(`menu_${menuId}_visible`, isChecked); renderMenuGrid(); }
 
-function hideInstallBanner() {
-    document.getElementById('installBanner').classList.remove('show');
-}
-
-function closeInstallBanner() {
-    hideInstallBanner();
-    localStorage.setItem('auva_install_dismissed', Date.now());
-}
-
-async function installApp() {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    deferredPrompt = null;
-}
-
-function showToast(message) {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
-}
-
-// Init App
-function initApp(){
-    // Hide splash screen after 2 seconds
-    setTimeout(() => {
-        document.getElementById('splashScreen').classList.add('hidden');
-    }, 2000);
-    
-    // Check online status
-    if (!navigator.onLine) {
-        document.getElementById('offlineIndicator').classList.add('show');
-        updateSyncStatus(false);
-    }
-    
-    // Load data
-    let d=localStorage.getItem('auva_kas_data');
-    if(d) dataKas=JSON.parse(d);
-    render();
-    
-    // Check install banner dismissed
-    const dismissed = localStorage.getItem('auva_install_dismissed');
-    if (dismissed && (Date.now() - dismissed) < 7 * 24 * 60 * 60 * 1000) {
-        // Don't show for 7 days
-    }
-}
-
-// ==================== BACKUP & RESTORE ====================
-
-function backupData() {
-    if (dataKas.length === 0) {
-        alert("Tidak ada data untuk di-backup!");
-        return;
-    }
-    
-    const backupObj = {
-        app: "Auva Kbihu AU",
-        version: "1.0",
-        created: new Date().toISOString(),
-        data: dataKas
-    };
-    
-    const jsonStr = JSON.stringify(backupObj, null, 2);
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Auva_Backup_${new Date().toLocaleDateString('id-ID').replace(/\//g, '-')}.auvabackup`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    showToast(`✅ Backup berhasil! ${dataKas.length} transaksi tersimpan`);
-}
-
-function restoreData(input) {
-    const file = input.files[0];
-    if (!file) return;
-    
-    input.value = '';
-    
-    if (!confirm("⚠️ PERINGATAN: Data saat ini akan ditimpa dengan data backup!\n\nLanjutkan restore?")) {
-        return;
-    }
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const backup = JSON.parse(e.target.result);
-            
-            if (!backup.app || !backup.data || !Array.isArray(backup.data)) {
-                throw new Error("Format file tidak valid!");
-            }
-            
-            if (backup.app !== "Auva Kbihu AU") {
-                throw new Error("File bukan backup Auva yang valid!");
-            }
-            
-            const jumlahTransaksi = backup.data.length;
-            if (!confirm(`Restore ${jumlahTransaksi} transaksi dari backup?\nTanggal backup: ${new Date(backup.created).toLocaleString('id-ID')}`)) {
-                return;
-            }
-            
-            dataKas = backup.data;
-            save();
-            
-            showToast(`✅ Restore berhasil! ${jumlahTransaksi} transaksi dipulihkan`);
-            
-        } catch (err) {
-            alert("❌ Gagal restore: " + err.message);
-        }
-    };
-    
-    reader.onerror = function() {
-        alert("❌ Gagal membaca file!");
-    };
-    
-    reader.readAsText(file);
-}
-
-// ==================== EXPORT PDF ====================
-
-function exportPDF() {
-    if (dataKas.length === 0) {
-        alert("Tidak ada data untuk di-export!");
-        return;
-    }
-    
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    // Header
-    doc.setFillColor(26, 93, 74);
-    doc.rect(0, 0, 210, 40, 'F');
-    
-    // Logo text
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
-    doc.setFont('helvetica', 'bold');
-    doc.text('AUVA', 105, 20, { align: 'center' });
-    
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Kbihu AU - Laporan Keuangan', 105, 30, { align: 'center' });
-    
-    // Info rombongan
-    const namaGrup = prompt("Nama Rombongan untuk laporan:", "Rombongan Umroh");
-    if (!namaGrup) return;
-    
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`Rombongan: ${namaGrup}`, 14, 50);
-    doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}`, 14, 58);
-    
-    // Hitung total
-    let masuk = 0, keluar = 0;
-    dataKas.forEach(i => {
-        if (i.tipe === 'masuk') masuk += i.nom;
-        else keluar += i.nom;
-    });
-    
-    // Summary box
-    doc.setFillColor(240, 240, 240);
-    doc.roundedRect(14, 65, 182, 25, 3, 3, 'F');
-    
-    doc.setFontSize(10);
-    doc.setTextColor(46, 204, 113);
-    doc.text(`Total Pemasukan: Rp ${masuk.toLocaleString('id-ID')}`, 20, 75);
-    doc.setTextColor(231, 76, 60);
-    doc.text(`Total Pengeluaran: Rp ${keluar.toLocaleString('id-ID')}`, 20, 82);
-    doc.setTextColor(26, 93, 74);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`SALDO AKHIR: Rp ${(masuk - keluar).toLocaleString('id-ID')}`, 110, 78);
-    
-    // Table
-    const tableData = dataKas.map(i => [
-        i.tgl,
-        i.ket,
-        i.tipe === 'masuk' ? 'MASUK' : 'KELUAR',
-        `Rp ${i.nom.toLocaleString('id-ID')}`
-    ]);
-    
-    doc.autoTable({
-        startY: 95,
-        head: [['Tanggal', 'Keterangan', 'Tipe', 'Nominal']],
-        body: tableData,
-        theme: 'striped',
-        headStyles: {
-            fillColor: [26, 93, 74],
-            textColor: 255,
-            fontStyle: 'bold'
-        },
-        styles: {
-            fontSize: 9,
-            cellPadding: 3
-        },
-        columnStyles: {
-            0: { cellWidth: 30 },
-            1: { cellWidth: 'auto' },
-            2: { cellWidth: 25, halign: 'center' },
-            3: { cellWidth: 40, halign: 'right' }
-        }
-    });
-    
-    // Footer
-    const pageCount = doc.internal.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
-        doc.setFontSize(8);
-        doc.setTextColor(128, 128, 128);
-        doc.text(`Halaman ${i} dari ${pageCount} - Auva Kbihu AU © 2026`, 105, 290, { align: 'center' });
-    }
-    
-    // Save
-    doc.save(`Laporan_${namaGrup.replace(/\s+/g, '_')}.pdf`);
-    showToast('✅ PDF berhasil di-export!');
-}
-
-// ==========================================================
-
-function openTab(t, el){
-    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.getElementById(t).classList.add('active');
-    el.classList.add('active');
-}
-
-function hitungUmroh(){
-    const nJam=parseInt(document.getElementById('totJam').value)||0;
-    if(nJam<=0)return alert("Isi jamaah!");
-    const ids=['cTiket','cLA','cAsuransi','cHandling','cPIC','cAlat','cAplikasi','cLain'];
-    const sub = ids.map(id=>parseFloat(document.getElementById(id).value)||0).reduce((a,b)=>a+b,0);
-    const nFoc=parseInt(document.getElementById('jamGratis').value)||0;
-    const nTL=parseInt(document.getElementById('numTL').value)||0;
-    const pPct=(parseFloat(document.getElementById('profitPct').value)||0)/100;
-          
+// ==================== ESTIMASI ====================
+let lastCalculatedText = '';
+function hitungUmroh() {
+    const nJam = parseInt(document.getElementById('totJam').value) || 0;
+    if(nJam<=0) return alert("Isi jamaah!");
+    const ids = ['cTiket','cLA','cAsuransi','cHandling','cPIC','cAlat','cAplikasi','cLain'];
+    const sub = ids.map(id=>parseRupiah(document.getElementById(id).value)).reduce((a,b)=>a+b,0);
+    const nFoc = parseInt(document.getElementById('jamGratis').value) || 0;
+    const nTL = parseInt(document.getElementById('numTL').value) || 0;
+    const pPct = (parseFloat(document.getElementById('profitPct').value) || 0) / 100;
     const profitKotor = (sub * nJam) * pPct;
     const biayaTL = sub * nTL;
     const bersih = profitKotor - biayaTL;
     const profitPerPax = bersih / (nJam - nFoc);
     const jual = ((sub * nJam) + profitKotor) / (nJam - nFoc);
     const totalOmzet = jual * (nJam - nFoc);
-          
-    const f=n=>"Rp "+Math.round(n).toLocaleString('id-ID');
-
+    const f = n => "Rp " + Math.round(n).toLocaleString('id-ID');
     const lokasi = document.getElementById('lokasiPaket').value;
     const garis = "━━━━━━━━━━━━━━━━━━";
-    lastCalculatedText = 
-`🧾 *Ringkasan Estimasi Paket*
-${garis}
-📍 *${lokasi}*
-👥 *Total Jamaah:* ${nJam}
-💰 *Harga per Pax:* *${f(jual)}*
-${garis}
-📞 *Silakan hubungi admin untuk detail.*`;
-
-    let hasil = document.getElementById('hasil');
-    hasil.innerHTML=`
-        <div class="res-item"><span>Modal Pokok / Pax</span><b>${f(sub)}</b></div>
-        <div class="res-item"><span>Total Omzet Grup</span><b>${f(totalOmzet)}</b></div>
-        <div class="res-item"><span>Profit Kotor Grup</span><span>${f(profitKotor)}</span></div>
-        <div class="res-item"><span>Biaya TL</span><span>${f(biayaTL)}</span></div>
-        <div class="res-item"><span>Profit Per Pax</span><span>${f(profitPerPax)}</span></div>
-        <div class="res-item" style="color:#2ecc71"><span>PROFIT BERSIH</span><b>${f(bersih)}</b></div>
-        <div class="res-item" style="border-top:2px solid var(--accent); margin-top:10px; padding-top:10px; flex-direction: column; align-items: center;">
-            <span style="font-weight:bold">HARGA BROSUR</span><span class="highlight">${f(jual)}</span>
-            <p style="font-size: 10px; color: #bdc3c7; text-align: center; margin-top: 5px; margin-bottom: 0;">
-                *Berdasarkan ${nJam - nFoc} jamaah bayar dan ${nFoc} gratis
-            </p>
-        </div>
-        <button class="btn" onclick="salinRingkasan()" style="background:#34495e; margin-top:15px; font-size:14px;">
-            <i class="fas fa-clipboard"></i> SALIN RINGKASAN HARGA
-        </button>`;
-    hasil.style.display='block';
-    hasil.scrollIntoView({behavior: "smooth"});
+    lastCalculatedText = `🧾 *Ringkasan Estimasi Paket*\n${garis}\n📍 *${lokasi}*\n👥 *Total Jamaah:* ${nJam}\n💰 *Harga per Pax:* *${f(jual)}*\n${garis}\n📞 *Silakan hubungi admin untuk detail.*`;
+    let hasil = document.getElementById('hasilEstimasi');
+    hasil.innerHTML = `<div class="res-item"><span>Modal Pokok / Pax</span><b>${f(sub)}</b></div><div class="res-item"><span>Total Omzet Grup</span><b>${f(totalOmzet)}</b></div><div class="res-item"><span>Profit Kotor Grup</span><span>${f(profitKotor)}</span></div><div class="res-item"><span>Biaya TL</span><span>${f(biayaTL)}</span></div><div class="res-item"><span>Profit Per Pax</span><span>${f(profitPerPax)}</span></div><div class="res-item" style="color:#2ecc71"><span>PROFIT BERSIH</span><b>${f(bersih)}</b></div><div class="res-item" style="border-top:2px solid var(--accent); margin-top:10px; padding-top:10px; flex-direction:column; align-items:center;"><span style="font-weight:bold">HARGA BROSUR</span><span class="highlight">${f(jual)}</span><p style="font-size:10px; color:#bdc3c7; text-align:center; margin-top:5px;">*Berdasarkan ${nJam - nFoc} jamaah bayar dan ${nFoc} gratis</p></div><button class="btn" onclick="salinRingkasan()" style="background:#34495e; margin-top:15px;">SALIN RINGKASAN HARGA</button>`;
+    hasil.style.display = 'block';
+    hasil.scrollIntoView({ behavior:"smooth" });
 }
+function salinRingkasan() { if(lastCalculatedText) navigator.clipboard.writeText(lastCalculatedText).then(()=>showToast("✅ Ringkasan tersalin!")).catch(()=>showToast("❌ Gagal menyalin")); else showToast('Silakan hitung estimasi dulu!'); }
 
-function salinRingkasan() {
-    if (!lastCalculatedText) {
-        showToast('Silakan hitung estimasi dulu!');
-        return;
-    }
-
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(lastCalculatedText)
-            .then(() => showToast("✅ Ringkasan disalin!"))
-            .catch(() => fallbackCopy(lastCalculatedText));
-    } else {
-        fallbackCopy(lastCalculatedText);
-    }
-}
-
-function fallbackCopy(text) {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.left = '-9999px';
-    document.body.appendChild(textarea);
-    textarea.focus();
-    textarea.select();
-    
-    try {
-        const successful = document.execCommand('copy');
-        document.body.removeChild(textarea);
-        if (successful) {
-            showToast("✅ Ringkasan disalin!");
-        } else {
-            showManualCopy(text);
-        }
-    } catch (err) {
-        document.body.removeChild(textarea);
-        showManualCopy(text);
-    }
-}
-
-function showManualCopy(text) {
-    document.getElementById('manualCopyText').value = text;
-    document.getElementById('copyOverlay').classList.add('show');
-    setTimeout(() => {
-        const textarea = document.getElementById('manualCopyText');
-        textarea.select();
-        textarea.setSelectionRange(0, 99999);
-    }, 100);
-}
-
-function closeCopyOverlay() {
-    document.getElementById('copyOverlay').classList.remove('show');
-}
-
-function tambah(){
-    let k=document.getElementById('ketReal').value;
-    let n=parseInt(document.getElementById('nomReal').value)||0;
-    let t=document.getElementById('tipeReal').value;
-    if(!k || n<=0) return alert("Isi data!");
-    
-    dataKas.push({
-        id:Date.now(), 
-        tgl:new Date().toLocaleDateString('id-ID'), 
-        ket:k, 
-        nom:n, 
-        tipe:t
-    });
-    save();
-    document.getElementById('ketReal').value=""; 
-    document.getElementById('nomReal').value="";
-    showToast('Transaksi berhasil ditambahkan!');
-}
-
-function save(){
-    localStorage.setItem('auva_kas_data', JSON.stringify(dataKas));
-    render();
-}
-
-function render(){
-    let body=document.getElementById('bodyKas');
-    body.innerHTML="";
-    let masuk=0, keluar=0;
+// ==================== KAS REAL ====================
+let dataKas = [];
+let lastWAText = '';
+function loadKasData() { const saved = localStorage.getItem('auva_kas_data'); dataKas = saved ? JSON.parse(saved) : []; renderKasTable(); updateSaldoKas(); }
+function saveKasData() { localStorage.setItem('auva_kas_data', JSON.stringify(dataKas)); renderKasTable(); updateSaldoKas(); }
+function renderKasTable() {
+    const body = document.getElementById('bodyKas'); if(!body) return;
+    body.innerHTML = ""; let masuk=0, keluar=0;
     dataKas.forEach(i=>{
         if(i.tipe==='masuk') masuk+=i.nom; else keluar+=i.nom;
-        body.innerHTML+=`<tr>
-            <td>${i.tgl}</td>
-            <td>${i.ket}</td>
-            <td class="${i.tipe==='masuk'?'txt-in':'txt-out'}">${i.nom.toLocaleString('id-ID')}</td>
-            <td><button class="btn-del" onclick="hapus(${i.id})"><i class="fas fa-trash"></i></button></td>
-        </tr>`;
+        const kegiatanDisplay = i.kegiatan ? `<span class="keg-tag">${escapeHtml(i.kegiatan)}</span><br>` : '';
+        body.innerHTML += `<tr><td>${i.tgl}</td><td>${kegiatanDisplay}</td><td>${escapeHtml(i.ket)}</td><td class="${i.tipe==='masuk'?'txt-in':'txt-out'}">${i.nom.toLocaleString('id-ID')}</td><td><button class="btn-del" onclick="hapusTransaksi(${i.id})">🗑️</button></td></tr>`;
     });
-    document.getElementById('summary').innerHTML=`<b>Saldo Akhir: Rp ${(masuk-keluar).toLocaleString('id-ID')}</b>`;
+    const summary = document.getElementById('summaryKas'); if(summary) summary.innerHTML = `<b>Saldo Akhir: Rp ${(masuk-keluar).toLocaleString('id-ID')}</b>`;
 }
-
-function hapus(id){
-    if(confirm("Hapus baris?")) { 
-        dataKas=dataKas.filter(x=>x.id!==id); 
-        save(); 
-        showToast('Transaksi dihapus');
-    }
+function updateSaldoKas() { const total = dataKas.reduce((sum,i)=>sum+(i.tipe==='masuk'?i.nom:-i.nom),0); const summary = document.getElementById('summaryKas'); if(summary) summary.innerHTML = `<b>Saldo Akhir: Rp ${total.toLocaleString('id-ID')}</b>`; }
+function tambahTransaksi() {
+    const kegiatan = document.getElementById('kegiatan').value.trim() || "-";
+    const ket = document.getElementById('ketReal').value.trim();
+    const nom = parseRupiah(document.getElementById('nomReal').value);
+    const tipe = document.getElementById('tipeReal').value;
+    if(!ket || nom<=0) return alert("Isi keterangan dan nominal!");
+    dataKas.unshift({ id:Date.now(), tgl:new Date().toLocaleDateString('id-ID'), kegiatan, ket, nom, tipe });
+    saveKasData();
+    document.getElementById('ketReal').value = "";
+    document.getElementById('nomReal').value = "";
+    showToast('Transaksi ditambahkan');
 }
-
-function resetData() {
-    if(confirm("Sudah download Excel/PDF? Klik OK untuk mengosongkan buku kas.")) {
-        dataKas = [];
-        save();
-        showToast('Buku kas dikosongkan');
-    }
+function hapusTransaksi(id) { if(confirm("Hapus transaksi?")) { dataKas = dataKas.filter(x=>x.id!==id); saveKasData(); showToast('Transaksi dihapus'); } }
+function resetKasData() { if(confirm("Kosongkan semua transaksi kas?")) { dataKas = []; saveKasData(); const hasilWA = document.getElementById('hasilWA'); if(hasilWA) { hasilWA.style.display = 'none'; hasilWA.innerHTML = ''; } lastWAText = ''; showToast('Buku kas dikosongkan'); } }
+function buatLaporanWA() {
+    if(dataKas.length===0) { const hw = document.getElementById('hasilWA'); if(hw) { hw.style.display='none'; hw.innerHTML=''; } lastWAText=''; return alert("Tidak ada data!"); }
+    const judul = document.getElementById('kegiatan').value.trim() || "Laporan Keuangan";
+    let masuk=0, keluar=0; dataKas.forEach(i=>{ if(i.tipe==='masuk') masuk+=i.nom; else keluar+=i.nom; });
+    const f = n=>"Rp "+n.toLocaleString('id-ID');
+    let detail=""; dataKas.forEach(i=>{ detail+=`${i.tipe==='masuk'?'🟢':'🔴'} ${i.tgl} | [${i.kegiatan}] ${i.ket}\n   💰 ${f(i.nom)}\n\n`; });
+    lastWAText = `🧾 *LAPORAN KEUANGAN AUVA*\n━━━━━━━━━━━━━━━━━━\n📍 *${judul}*\n📅 ${new Date().toLocaleDateString('id-ID')}\n\n━━━━━━━━━━━━━━━━━━\n💚 *TOTAL MASUK:* ${f(masuk)}\n❤️ *TOTAL KELUAR:* ${f(keluar)}\n━━━━━━━━━━━━━━━━━━\n💰 *SALDO AKHIR:* *${f(masuk - keluar)}*\n\n━━━━━━━━━━━━━━━━━━\n📋 *DETAIL TRANSAKSI:*\n━━━━━━━━━━━━━━━━━━\n\n${detail}\n🤖 Generated by Auva Kbihu AU`;
+    const hasilWA = document.getElementById('hasilWA');
+    hasilWA.innerHTML = `<div class="res-item"><span>Total Masuk</span><span style="color:#2ecc71">${f(masuk)}</span></div><div class="res-item"><span>Total Keluar</span><span style="color:#e74c3c">${f(keluar)}</span></div><div class="res-item"><span>SALDO AKHIR</span><span class="highlight">${f(masuk - keluar)}</span></div><button class="btn" onclick="salinLaporanWA()" style="background:#34495e;">SALIN LAPORAN WA</button>`;
+    hasilWA.style.display = 'block';
 }
+function salinLaporanWA() { if(lastWAText) navigator.clipboard.writeText(lastWAText).then(()=>showToast("✅ Laporan tersalin!")); else showToast('Buat laporan dulu!'); }
+function backupKasData() { if(dataKas.length===0) return alert("Tidak ada data!"); const backup={ app:"Auva Kbihu AU - Kas", version:"1.0", created:new Date().toISOString(), kegiatan:document.getElementById('kegiatan').value, data:dataKas }; const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'})); a.download=`Auva_Kas_Backup_${new Date().toLocaleDateString('id-ID').replace(/\//g,'-')}.json`; a.click(); showToast('Backup kas berhasil'); }
+function restoreKasData(input) { const file=input.files[0]; if(!file) return; input.value=''; if(!confirm("Timpa data kas yang ada?")) return; const reader=new FileReader(); reader.onload=e=>{ try{ const backup=JSON.parse(e.target.result); if(backup.data && Array.isArray(backup.data)){ dataKas=backup.data; if(backup.kegiatan) document.getElementById('kegiatan').value=backup.kegiatan; saveKasData(); showToast(`Restore ${dataKas.length} transaksi berhasil`); } else throw new Error(); } catch(err){ alert("File backup tidak valid!"); } }; reader.readAsText(file); }
+function exportKasPDF() { if(dataKas.length===0) return alert("Tidak ada data!"); const {jsPDF}=window.jspdf; const doc=new jsPDF(); doc.setFillColor(26,93,74); doc.rect(0,0,210,40,'F'); doc.setTextColor(255,255,255); doc.setFontSize(20); doc.text('AUVA - LAPORAN KAS',105,25,{align:'center'}); doc.setTextColor(0,0,0); doc.setFontSize(10); const judul=document.getElementById('kegiatan').value.trim()||"Laporan Kas"; doc.text(`Kegiatan: ${judul}`,14,50); doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`,14,58); let masuk=0,keluar=0; dataKas.forEach(i=>{ if(i.tipe==='masuk') masuk+=i.nom; else keluar+=i.nom; }); const tableData=dataKas.map(i=>[i.tgl,i.kegiatan||'-',i.ket,i.tipe==='masuk'?'MASUK':'KELUAR',`Rp ${i.nom.toLocaleString('id-ID')}`]); doc.autoTable({startY:70,head:[['Tgl','Kegiatan','Ket','Tipe','Nominal']],body:tableData,theme:'striped',headStyles:{fillColor:[26,93,74]},styles:{fontSize:8}}); doc.save(`Laporan_Kas_${judul.replace(/\s+/g,'_')}.pdf`); showToast('PDF berhasil di-export'); }
+function exportKasExcel() { if(dataKas.length===0) return alert("Tidak ada data!"); const judul=document.getElementById('kegiatan').value.trim()||"Laporan_Kas"; const wsData=dataKas.map(i=>({ Tanggal:i.tgl, Kegiatan:i.kegiatan, Keterangan:i.ket, Tipe:i.tipe.toUpperCase(), Nominal:i.nom })); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(wsData),"Transaksi Kas"); XLSX.writeFile(wb,`${judul.replace(/\s+/g,'_')}.xlsx`); showToast('Excel berhasil di-export'); }
 
-function downloadExcel() {
-    if(dataKas.length === 0) return alert("Data kosong!");
-    let namaGrup = prompt("Nama Rombongan:", "Laporan_Auva");
-    if(!namaGrup) return;
+// ==================== DATA JAMAAH ====================
+let jamaahList = [];
+let dynamicFieldsJamaah = [];
+let editingJamaahId = null;
+function loadJamaahData() { const saved = localStorage.getItem('auva_jamaah_list'); jamaahList = saved ? JSON.parse(saved) : []; }
+function saveJamaahData() { localStorage.setItem('auva_jamaah_list', JSON.stringify(jamaahList)); }
+function loadDynamicFieldsJamaah() { const saved = localStorage.getItem('auva_jamaah_fields'); dynamicFieldsJamaah = saved ? JSON.parse(saved) : []; }
+function saveDynamicFieldsJamaah() { localStorage.setItem('auva_jamaah_fields', JSON.stringify(dynamicFieldsJamaah)); }
+function renderJamaahList() {
+    const container = document.getElementById('jamaahListContainer'); if(!container) return;
+    if(jamaahList.length===0) { container.innerHTML = '<p style="text-align:center; padding:20px;">Belum ada data jamaah</p>'; return; }
+    let html = '';
+    [...jamaahList].reverse().forEach((j,idx)=>{
+        const originalIdx = jamaahList.length-1-idx;
+        html += `<div class="jamaah-card"><div class="jamaah-header"><div><div class="jamaah-nama">👤 ${escapeHtml(j.nama_lengkap)}</div><div class="jamaah-tgl">📅 ${j.created_at || '-'}</div></div><div class="jamaah-actions"><button class="btn-share-wa" onclick="shareSingleJamaah(${originalIdx})">💬</button><button class="btn-edit-jamaah" onclick="editJamaah(${originalIdx})">✏️</button><button class="btn-delete-jamaah" onclick="deleteJamaah(${originalIdx})">🗑️</button></div></div><div class="jamaah-detail">`;
+        for(const field of dynamicFieldsJamaah) { const val = j.additional_fields?.[field.name] || ''; if(val) html += `<div class="jamaah-detail-item"><strong>${escapeHtml(field.label)}:</strong> ${escapeHtml(val)}</div>`; }
+        html += `</div></div>`;
+    });
+    container.innerHTML = html;
+}
+function renderJamaahForm() {
+    const container = document.getElementById('jamaahFormContainer'); if(!container) return;
+    let html = `<div class="dynamic-field"><label>Nama Lengkap <span class="required-star">*</span></label><input type="text" id="jamaahNamaLengkap" placeholder="Nama lengkap jamaah"></div>`;
+    for(const field of dynamicFieldsJamaah) { html += `<div class="dynamic-field"><label>${escapeHtml(field.label)}</label>${field.type==='textarea' ? `<textarea id="jamaahField_${field.name}" rows="3"></textarea>` : `<input type="${field.type}" id="jamaahField_${field.name}">`}</div>`; }
+    container.innerHTML = html;
+}
+function openTambahJamaahModal() { if(!isAdminMode) return showToast('Aktifkan Mode Admin dulu!'); editingJamaahId=null; document.getElementById('jamaahModalTitle').innerText='Tambah Data Jamaah'; renderJamaahForm(); document.getElementById('jamaahModal').classList.add('show'); }
+function editJamaah(index) { if(!isAdminMode) return showToast('Aktifkan Mode Admin dulu!'); const j=jamaahList[index]; if(!j) return; editingJamaahId=index; document.getElementById('jamaahModalTitle').innerText='Edit Data Jamaah'; renderJamaahForm(); document.getElementById('jamaahNamaLengkap').value=j.nama_lengkap||''; for(const field of dynamicFieldsJamaah) { const input=document.getElementById(`jamaahField_${field.name}`); if(input) input.value=j.additional_fields?.[field.name]||''; } document.getElementById('jamaahModal').classList.add('show'); }
+function saveJamaah() {
+    const nama = document.getElementById('jamaahNamaLengkap').value.trim();
+    if(!nama) return showToast('Nama lengkap wajib diisi!');
+    const additional = {};
+    for(const field of dynamicFieldsJamaah) { const input=document.getElementById(`jamaahField_${field.name}`); if(input) additional[field.name]=input.value.trim(); }
+    const now = new Date().toLocaleDateString('id-ID')+' '+new Date().toLocaleTimeString('id-ID');
+    if(editingJamaahId!==null) { jamaahList[editingJamaahId]={...jamaahList[editingJamaahId], nama_lengkap:nama, additional_fields:additional, updated_at:now }; showToast('Data diupdate'); }
+    else { jamaahList.push({ id:Date.now(), nama_lengkap:nama, additional_fields:additional, created_at:now }); showToast('Data ditambahkan'); }
+    saveJamaahData(); renderJamaahList(); closeJamaahModal();
+}
+function deleteJamaah(index) { if(confirm('Hapus data jamaah ini?')) { jamaahList.splice(index,1); saveJamaahData(); renderJamaahList(); showToast('Data dihapus'); } }
+function shareSingleJamaah(index) { const j=jamaahList[index]; if(!j) return; let text=`*DATA JAMAAH*\n━━━━━━━━━━━━━━━━━━\n*Nama:* ${j.nama_lengkap}\n`; for(const field of dynamicFieldsJamaah) { const val=j.additional_fields?.[field.name]||''; if(val) text+=`*${field.label}:* ${val}\n`; } text+=`\n📅 *Tgl Input:* ${j.created_at||'-'}\n#AuvaKbihuAU`; window.open(`https://wa.me/?text=${encodeURIComponent(text)}`); }
+function shareAllJamaahToWA() { if(jamaahList.length===0) return showToast('Tidak ada data jamaah!'); let text=`*DAFTAR JAMAAH*\n━━━━━━━━━━━━━━━━━━\n📊 *Total: ${jamaahList.length} Jamaah*\n━━━━━━━━━━━━━━━━━━\n\n`; jamaahList.forEach((j,i)=>{ text+=`${i+1}. *${j.nama_lengkap}*\n`; for(const field of dynamicFieldsJamaah) { const val=j.additional_fields?.[field.name]||''; if(val) text+=`   ${field.label}: ${val}\n`; } text+=`\n`; }); text+=`━━━━━━━━━━━━━━━━━━\n#AuvaKbihuAU`; window.open(`https://wa.me/?text=${encodeURIComponent(text)}`); }
+function exportJamaahToExcel() { if(jamaahList.length===0) return showToast('Tidak ada data!'); const headers=['No','Nama Lengkap','Tanggal Input']; for(const f of dynamicFieldsJamaah) headers.push(f.label); const rows=jamaahList.map((j,i)=>{ const row=[i+1, j.nama_lengkap, j.created_at||'-']; for(const f of dynamicFieldsJamaah) row.push(j.additional_fields?.[f.name]||''); return row; }); const ws=XLSX.utils.aoa_to_sheet([headers,...rows]); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Data Jamaah'); XLSX.writeFile(wb,`Data_Jamaah_${new Date().toLocaleDateString('id-ID').replace(/\//g,'-')}.xlsx`); showToast('Excel berhasil di-export'); }
+function backupJamaahData() { if(jamaahList.length===0 && dynamicFieldsJamaah.length===0) return alert("Tidak ada data!"); const backup={ app:"Auva Kbihu AU - Data Jamaah", version:"1.0", created:new Date().toISOString(), fields:dynamicFieldsJamaah, data:jamaahList }; const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'})); a.download=`Auva_Jamaah_Backup_${new Date().toLocaleDateString('id-ID').replace(/\//g,'-')}.json`; a.click(); showToast('Backup jamaah berhasil'); }
+function restoreJamaahData(input) { const file=input.files[0]; if(!file) return; input.value=''; if(!confirm("Timpa data jamaah yang ada?")) return; const reader=new FileReader(); reader.onload=e=>{ try{ const backup=JSON.parse(e.target.result); if(backup.data && Array.isArray(backup.data)){ jamaahList=backup.data; if(backup.fields){ dynamicFieldsJamaah=backup.fields; saveDynamicFieldsJamaah(); } saveJamaahData(); renderJamaahList(); showToast(`Restore ${jamaahList.length} data berhasil`); } else throw new Error(); } catch(err){ alert("File backup tidak valid!"); } }; reader.readAsText(file); }
+function openManageFieldsModal() { if(!isAdminMode) return showToast('Aktifkan Mode Admin dulu!'); renderFieldsList(); document.getElementById('manageFieldsModal').classList.add('show'); }
+function closeManageFieldsModal() { document.getElementById('manageFieldsModal').classList.remove('show'); }
+function renderFieldsList() { const container=document.getElementById('fieldsListContainer'); if(!container) return; if(dynamicFieldsJamaah.length===0){ container.innerHTML='<p>Belum ada field dinamis</p>'; return; } let html=''; dynamicFieldsJamaah.forEach((f,idx)=>{ html+=`<div class="field-item"><div class="field-info"><div class="field-name">${escapeHtml(f.label)}</div><div class="field-label">${f.name} (${f.type})</div></div><div><button class="btn-danger-small" onclick="deleteDynamicField(${idx})">Hapus</button></div></div>`; }); container.innerHTML=html; }
+function openFieldModal() { if(!isAdminMode) return showToast('Aktifkan Mode Admin dulu!'); document.getElementById('newFieldName').value=''; document.getElementById('newFieldLabel').value=''; document.getElementById('fieldModal').classList.add('show'); }
+function closeFieldModal() { document.getElementById('fieldModal').classList.remove('show'); }
+function addDynamicFieldJamaah() { const name=document.getElementById('newFieldName').value.trim().toLowerCase(); const label=document.getElementById('newFieldLabel').value.trim(); const type=document.getElementById('newFieldType').value; if(!/^[a-z0-9_]+$/.test(name)) return showToast('Nama field: huruf kecil, angka, underscore!'); if(!label) return showToast('Label harus diisi!'); if(dynamicFieldsJamaah.some(f=>f.name===name)) return showToast('Field sudah ada!'); dynamicFieldsJamaah.push({name,label,type}); saveDynamicFieldsJamaah(); closeFieldModal(); renderFieldsList(); showToast('Field ditambahkan'); }
+function deleteDynamicField(idx) { if(confirm(`Hapus field "${dynamicFieldsJamaah[idx].label}"?`)){ dynamicFieldsJamaah.splice(idx,1); saveDynamicFieldsJamaah(); renderFieldsList(); renderJamaahList(); showToast('Field dihapus'); } }
+function closeJamaahModal() { document.getElementById('jamaahModal').classList.remove('show'); editingJamaahId=null; }
+function importJamaahFromExcel(input) { const file=input.files[0]; if(!file) return; if(!confirm("Import Excel akan MENAMBAH data jamaah baru (tidak menghapus yang lama). Lanjutkan?")){ input.value=''; return; } const reader=new FileReader(); reader.onload=e=>{ const data=new Uint8Array(e.target.result); const workbook=XLSX.read(data,{type:'array'}); const sheet=workbook.Sheets[workbook.SheetNames[0]]; const rows=XLSX.utils.sheet_to_json(sheet); let added=0; for(const row of rows){ const nama=row['Nama Lengkap'] || row['Nama'] || row['nama_lengkap'] || row['nama']; if(!nama) continue; const additional={}; for(const field of dynamicFieldsJamaah){ const val=row[field.label] || row[field.name] || ''; if(val) additional[field.name]=val; } const now=new Date().toLocaleDateString('id-ID')+' '+new Date().toLocaleTimeString('id-ID'); jamaahList.push({ id:Date.now()+Math.random(), nama_lengkap:nama.toString().trim(), additional_fields:additional, created_at:now }); added++; } saveJamaahData(); renderJamaahList(); showToast(`✅ Import selesai! ${added} jamaah ditambahkan`); input.value=''; }; reader.readAsArrayBuffer(file); }
 
-    const wb = XLSX.utils.book_new();
-    const ws1Data = dataKas.map(i => ({ 
-        Tanggal: i.tgl, 
-        Keterangan: i.ket, 
-        Tipe: i.tipe.toUpperCase(), 
-        Nominal: i.nom 
-    }));
-    const ws1 = XLSX.utils.json_to_sheet(ws1Data);
-    XLSX.utils.book_append_sheet(wb, ws1, "Detail Transaksi");
+// ==================== JAMAAH KITA ====================
+let jamaahKitaList = [];
+let dynamicFieldsJamaahKita = [];
+function loadJamaahKitaData() { const saved = localStorage.getItem('auva_jamaah_kita_list'); jamaahKitaList = saved ? JSON.parse(saved) : []; }
+function saveJamaahKitaData() { localStorage.setItem('auva_jamaah_kita_list', JSON.stringify(jamaahKitaList)); }
+function loadDynamicFieldsJamaahKita() { const saved = localStorage.getItem('auva_jamaah_kita_fields'); dynamicFieldsJamaahKita = saved ? JSON.parse(saved) : []; }
+function saveDynamicFieldsJamaahKita() { localStorage.setItem('auva_jamaah_kita_fields', JSON.stringify(dynamicFieldsJamaahKita)); }
+function renderPilihJamaahKita() { const select=document.getElementById('pilihJamaahKita'); if(!select) return; let html='<option value="">-- Pilih Jamaah --</option>'; jamaahList.forEach((j,idx)=>{ html+=`<option value="${idx}">${escapeHtml(j.nama_lengkap)}</option>`; }); select.innerHTML=html; }
+function renderJamaahKitaDynamicFieldsForm() { const container=document.getElementById('jamaahKitaDynamicFields'); if(!container) return; let html=''; for(const field of dynamicFieldsJamaahKita){ html+=`<div class="dynamic-field"><label>${escapeHtml(field.label)}</label>${field.type==='textarea'?`<textarea id="jamaahKitaField_${field.name}" rows="2"></textarea>`:`<input type="${field.type}" id="jamaahKitaField_${field.name}">`}</div>`; } container.innerHTML=html; }
+function tambahJamaahKita() { const select=document.getElementById('pilihJamaahKita'); const selectedIndex=select.value; if(!selectedIndex) return showToast('Pilih jamaah terlebih dahulu!'); const jamaah=jamaahList[parseInt(selectedIndex)]; if(!jamaah) return; const additionalFields={}; for(const field of dynamicFieldsJamaahKita){ const input=document.getElementById(`jamaahKitaField_${field.name}`); if(input) additionalFields[field.name]=input.value.trim(); } const now=new Date().toLocaleDateString('id-ID')+' '+new Date().toLocaleTimeString('id-ID'); const existing=jamaahKitaList.find(jk=>jk.jamaahId===jamaah.id); if(existing){ if(confirm('Jamaah ini sudah ada di daftar. Update data?')){ existing.additional_fields=additionalFields; existing.updated_at=now; saveJamaahKitaData(); renderJamaahKitaList(); showToast('Data jamaah kita diupdate'); } } else { jamaahKitaList.push({ id:Date.now(), jamaahId:jamaah.id, nama_lengkap:jamaah.nama_lengkap, additional_fields:additionalFields, created_at:now }); saveJamaahKitaData(); renderJamaahKitaList(); showToast('Jamaah ditambahkan ke Jamaah Kita'); } for(const field of dynamicFieldsJamaahKita){ const input=document.getElementById(`jamaahKitaField_${field.name}`); if(input) input.value=''; } select.value=''; }
+function renderJamaahKitaList() { const container=document.getElementById('jamaahKitaListContainer'); if(!container) return; if(jamaahKitaList.length===0){ container.innerHTML='<p style="text-align:center; padding:20px;">Belum ada data jamaah kita</p>'; return; } let html=''; [...jamaahKitaList].reverse().forEach((jk,idx)=>{ const originalIdx=jamaahKitaList.length-1-idx; html+=`<div class="jamaah-card"><div class="jamaah-header"><div><div class="jamaah-nama">👤 ${escapeHtml(jk.nama_lengkap)}</div><div class="jamaah-tgl">📅 ${jk.created_at||'-'}</div></div><div class="jamaah-actions"><button class="btn-share-wa" onclick="shareSingleJamaahKita(${originalIdx})">💬</button><button class="btn-edit-jamaah" onclick="editJamaahKita(${originalIdx})">✏️</button><button class="btn-delete-jamaah" onclick="deleteJamaahKita(${originalIdx})">🗑️</button></div></div><div class="jamaah-detail">`; for(const field of dynamicFieldsJamaahKita){ const val=jk.additional_fields?.[field.name]||''; if(val) html+=`<div class="jamaah-detail-item"><strong>${escapeHtml(field.label)}:</strong> ${escapeHtml(val)}</div>`; } html+=`</div></div>`; }); container.innerHTML=html; }
+function editJamaahKita(index) { if(!isAdminMode) return showToast('Aktifkan Mode Admin dulu!'); const jk=jamaahKitaList[index]; if(!jk) return; for(const field of dynamicFieldsJamaahKita){ const input=document.getElementById(`jamaahKitaField_${field.name}`); if(input) input.value=jk.additional_fields?.[field.name]||''; } const select=document.getElementById('pilihJamaahKita'); const jamaahIndex=jamaahList.findIndex(j=>j.id===jk.jamaahId); if(jamaahIndex!==-1) select.value=jamaahIndex; jamaahKitaList.splice(index,1); saveJamaahKitaData(); renderJamaahKitaList(); showToast('Edit data, silakan simpan ulang'); }
+function deleteJamaahKita(index) { if(confirm('Hapus data jamaah kita ini?')){ jamaahKitaList.splice(index,1); saveJamaahKitaData(); renderJamaahKitaList(); showToast('Data dihapus'); } }
+function shareSingleJamaahKita(index) { const jk=jamaahKitaList[index]; if(!jk) return; let text=`*JAMAAH KITA*\n━━━━━━━━━━━━━━━━━━\n*Nama:* ${jk.nama_lengkap}\n`; for(const field of dynamicFieldsJamaahKita){ const val=jk.additional_fields?.[field.name]||''; if(val) text+=`*${field.label}:* ${val}\n`; } text+=`\n📅 *Tgl Input:* ${jk.created_at||'-'}\n#AuvaKbihuAU`; window.open(`https://wa.me/?text=${encodeURIComponent(text)}`); }
+function shareAllJamaahKitaToWA() { if(jamaahKitaList.length===0) return showToast('Tidak ada data jamaah kita!'); let text=`*JAMAAH KITA*\n━━━━━━━━━━━━━━━━━━\n📊 *Total: ${jamaahKitaList.length} Jamaah*\n━━━━━━━━━━━━━━━━━━\n\n`; jamaahKitaList.forEach((jk,i)=>{ text+=`${i+1}. *${jk.nama_lengkap}*\n`; for(const field of dynamicFieldsJamaahKita){ const val=jk.additional_fields?.[field.name]||''; if(val) text+=`   ${field.label}: ${val}\n`; } text+=`\n`; }); text+=`━━━━━━━━━━━━━━━━━━\n#AuvaKbihuAU`; window.open(`https://wa.me/?text=${encodeURIComponent(text)}`); }
+function backupJamaahKitaData() { if(jamaahKitaList.length===0 && dynamicFieldsJamaahKita.length===0) return alert("Tidak ada data!"); const backup={ app:"Auva Kbihu AU - Jamaah Kita", version:"1.0", created:new Date().toISOString(), fields:dynamicFieldsJamaahKita, data:jamaahKitaList }; const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'})); a.download=`Auva_JamaahKita_Backup_${new Date().toLocaleDateString('id-ID').replace(/\//g,'-')}.json`; a.click(); showToast('Backup jamaah kita berhasil'); }
+function restoreJamaahKitaData(input) { const file=input.files[0]; if(!file) return; input.value=''; if(!confirm("Timpa data jamaah kita yang ada?")) return; const reader=new FileReader(); reader.onload=e=>{ try{ const backup=JSON.parse(e.target.result); if(backup.data && Array.isArray(backup.data)){ jamaahKitaList=backup.data; if(backup.fields){ dynamicFieldsJamaahKita=backup.fields; saveDynamicFieldsJamaahKita(); } saveJamaahKitaData(); renderJamaahKitaList(); showToast(`Restore ${jamaahKitaList.length} data berhasil`); } else throw new Error(); } catch(err){ alert("File backup tidak valid!"); } }; reader.readAsText(file); }
+function openJamaahKitaFieldModal() { if(!isAdminMode) return showToast('Aktifkan Mode Admin dulu!'); renderJamaahKitaFieldsList(); document.getElementById('jamaahKitaFieldModal').classList.add('show'); }
+function closeJamaahKitaFieldModal() { document.getElementById('jamaahKitaFieldModal').classList.remove('show'); }
+function renderJamaahKitaFieldsList() { const container=document.getElementById('jamaahKitaFieldsListContainer'); if(!container) return; if(dynamicFieldsJamaahKita.length===0){ container.innerHTML='<p>Belum ada field dinamis</p>'; return; } let html='<h4 style="margin-top:10px;">Daftar Field Saat Ini:</h4>'; dynamicFieldsJamaahKita.forEach((f,idx)=>{ html+=`<div class="field-item"><div class="field-info"><div class="field-name">${escapeHtml(f.label)}</div><div class="field-label">${f.name} (${f.type})</div></div><div><button class="btn-danger-small" onclick="deleteJamaahKitaDynamicField(${idx})">Hapus</button></div></div>`; }); container.innerHTML=html; }
+function addJamaahKitaDynamicField() { const name=document.getElementById('jamaahKitaNewFieldName').value.trim().toLowerCase(); const label=document.getElementById('jamaahKitaNewFieldLabel').value.trim(); const type=document.getElementById('jamaahKitaNewFieldType').value; if(!/^[a-z0-9_]+$/.test(name)) return showToast('Nama field: huruf kecil, angka, underscore!'); if(!label) return showToast('Label harus diisi!'); if(dynamicFieldsJamaahKita.some(f=>f.name===name)) return showToast('Field sudah ada!'); dynamicFieldsJamaahKita.push({name,label,type}); saveDynamicFieldsJamaahKita(); document.getElementById('jamaahKitaNewFieldName').value=''; document.getElementById('jamaahKitaNewFieldLabel').value=''; renderJamaahKitaFieldsList(); renderJamaahKitaDynamicFieldsForm(); showToast('Field ditambahkan'); }
+function deleteJamaahKitaDynamicField(idx) { if(confirm(`Hapus field "${dynamicFieldsJamaahKita[idx].label}"?`)){ dynamicFieldsJamaahKita.splice(idx,1); saveDynamicFieldsJamaahKita(); renderJamaahKitaFieldsList(); renderJamaahKitaDynamicFieldsForm(); renderJamaahKitaList(); showToast('Field dihapus'); } }
 
-    let inTotal = dataKas.filter(i=>i.tipe==='masuk').reduce((a,b)=>a+b.nom,0);
-    let outTotal = dataKas.filter(i=>i.tipe==='keluar').reduce((a,b)=>a+b.nom,0);
-    const ws2Data = [{ Pemasukan: inTotal, Pengeluaran: outTotal, Saldo: inTotal-outTotal }];
-    const ws2 = XLSX.utils.json_to_sheet(ws2Data);
-    XLSX.utils.book_append_sheet(wb, ws2, "Rekapan");
+// ==================== ZAKAT ====================
+let sumberHartaList = [];
+let sumberCounter = 0;
+let lastZakatText = '';
+function tambahSumberHarta() { const id = sumberCounter++; sumberHartaList.push({ id, nama: '', jumlah: 0, persen: 2.5 }); renderSumberHartaList(); }
+function hapusSumberHarta(id) { sumberHartaList = sumberHartaList.filter(s => s.id !== id); renderSumberHartaList(); }
+function updateSumberHarta(id, field, value) { const sumber = sumberHartaList.find(s => s.id === id); if(sumber) { if(field === 'nama') sumber.nama = value; if(field === 'jumlah') sumber.jumlah = parseRupiah(value); if(field === 'persen') sumber.persen = parseFloat(value) || 0; } }
+function renderSumberHartaList() { const container = document.getElementById('sumberHartaContainer'); if(!container) return; if(sumberHartaList.length === 0) { container.innerHTML = '<p style="text-align:center; padding:20px;">Belum ada sumber harta</p>'; return; } let html = ''; sumberHartaList.forEach(s => { let jumlahTampil = s.jumlah > 0 ? s.jumlah.toLocaleString('id-ID') : ''; html += `<div class="zakat-sumber-item"><div class="sumber-header"><strong>Sumber Harta</strong><button class="btn-remove-sumber" onclick="hapusSumberHarta(${s.id})">Hapus</button></div><div class="dynamic-field"><label>Nama Sumber</label><input type="text" value="${escapeHtml(s.nama)}" placeholder="Contoh: Tabungan, Dagangan, Pertanian" onchange="updateSumberHarta(${s.id}, 'nama', this.value)"></div><div class="row"><div class="dynamic-field"><label>Jumlah Harta (Rp)</label><input type="text" class="money-input" value="${jumlahTampil}" onchange="updateSumberHarta(${s.id}, 'jumlah', this.value)"></div><div class="dynamic-field"><label>Persentase Zakat (%)</label><input type="number" step="0.1" value="${s.persen}" onchange="updateSumberHarta(${s.id}, 'persen', this.value)"></div></div></div>`; }); container.innerHTML = html; }
+function toggleZakatInput() { const jenis = document.getElementById('jenisZakat').value; const globalDiv = document.getElementById('zakatGlobalInput'); if(jenis === 'pertanian') { globalDiv.innerHTML = `<div class="input-group"><label>Harga Beras per Kg (Rp)</label><input type="text" id="hargaBeras" class="money-input" value="15.000"></div>`; } else { globalDiv.innerHTML = `<div class="input-group"><label>Harga Emas per Gram (Rp)</label><input type="text" id="hargaEmas" class="money-input" value="1.200.000"></div>`; } }
+function hitungZakat() { if(sumberHartaList.length === 0) return alert('Tambah sumber harta terlebih dahulu!'); const jenis = document.getElementById('jenisZakat').value; let nisab = 0, nisabGram = 0, satuan = ''; if(jenis === 'pertanian') { const hargaBeras = parseRupiah(document.getElementById('hargaBeras')?.value || '15000'); nisabGram = 653; nisab = nisabGram * hargaBeras; satuan = 'kg beras'; } else { const hargaEmas = parseRupiah(document.getElementById('hargaEmas')?.value || '1200000'); nisabGram = 85; nisab = nisabGram * hargaEmas; satuan = 'gram emas'; } let totalHarta = 0, totalZakat = 0; const detailZakat = []; for(const s of sumberHartaList) { if(s.jumlah > 0 && s.persen > 0) { const zakat = (s.jumlah * s.persen) / 100; totalHarta += s.jumlah; totalZakat += zakat; const namaSumber = s.nama || 'Sumber'; detailZakat.push(`${namaSumber}: Rp ${s.jumlah.toLocaleString('id-ID')} x ${s.persen}% = Rp ${zakat.toLocaleString('id-ID')}`); } } const status = totalHarta >= nisab ? 'WAJIB ZAKAT' : 'TIDAK WAJIB ZAKAT'; const bersih = totalHarta - totalZakat; const f = n => "Rp " + n.toLocaleString('id-ID'); const garis = "━━━━━━━━━━━━━━━━━━"; lastZakatText = `📊 *KALKULATOR ZAKAT*\n${garis}\n📌 *Jenis Zakat:* ${jenis === 'mal' ? 'Zakat Mal (Harta/Uang)' : (jenis === 'pertanian' ? 'Zakat Pertanian' : 'Zakat Perdagangan')}\n💰 *Total Harta:* ${f(totalHarta)}\n⚖️ *Nisab (${nisabGram} ${satuan}):* ${f(nisab)}\n📋 *Status:* ${status}\n${garis}\n💵 *Total Zakat:* ${f(totalZakat)}\n✨ *Bersih:* ${f(bersih)}\n${garis}\n📋 *Detail Perhitungan:*\n${detailZakat.join('\n')}\n${garis}\n#AuvaKbihuAU`; let detailHtml = ''; for(const d of detailZakat) { detailHtml += `<div class="res-item"><span>📌</span><span>${d}</span></div>`; } const hasil = document.getElementById('hasilZakat'); hasil.innerHTML = `<div class="res-item"><span>Total Harta</span><b>${f(totalHarta)}</b></div><div class="res-item"><span>Nisab (${nisabGram} ${satuan})</span><b>${f(nisab)}</b></div><div class="res-item"><span>Status</span><b style="color:${status === 'WAJIB ZAKAT' ? '#2ecc71' : '#e74c3c'}">${status}</b></div><div class="res-item" style="border-top:1px solid rgba(255,255,255,0.2); margin-top:5px; padding-top:10px;"><span>TOTAL ZAKAT</span><span class="highlight">${f(totalZakat)}</span></div><div class="res-item"><span>Bersih</span><b>${f(bersih)}</b></div>${detailHtml.length > 0 ? `<div class="res-item" style="border-top:1px solid rgba(255,255,255,0.2); margin-top:5px; padding-top:10px; flex-direction:column;"><span style="margin-bottom:5px;">📋 DETAIL</span>${detailHtml}</div>` : ''}<button class="btn" onclick="salinRingkasanZakat()" style="background:#34495e; margin-top:15px;">SALIN RINGKASAN ZAKAT</button>`; hasil.style.display = 'block'; hasil.scrollIntoView({ behavior:"smooth" }); }
+function salinRingkasanZakat() { if(lastZakatText) navigator.clipboard.writeText(lastZakatText).then(()=>showToast("✅ Ringkasan zakat tersalin!")).catch(()=>showToast("❌ Gagal menyalin")); else showToast('Silakan hitung zakat dulu!'); }
 
-    XLSX.writeFile(wb, namaGrup + ".xlsx");
-    showToast('Excel berhasil di-download!');
+// ==================== CATATAN ====================
+let catatanList = [];
+let currentDetailIndex = null;
+function loadCatatanData() { const saved = localStorage.getItem('auva_catatan_list'); catatanList = saved ? JSON.parse(saved) : []; }
+function saveCatatanData() { localStorage.setItem('auva_catatan_list', JSON.stringify(catatanList)); }
+function renderCatatanList() { const container = document.getElementById('catatanListContainer'); if(!container) return; if(catatanList.length===0){ container.innerHTML='<p style="text-align:center; padding:20px;">Belum ada catatan</p>'; return; } let html=''; catatanList.forEach((item,idx)=>{ html+=`<div class="list-item" onclick="viewDetailCatatan(${idx})"><div class="item-left"><div class="item-num">${idx+1}</div><b>${escapeHtml(item.judul)}</b></div><div class="item-actions" onclick="event.stopPropagation()"><button onclick="shareCatatanItem(${idx})">💬</button><button onclick="deleteCatatanItem(${idx})">🗑️</button></div></div>`; }); container.innerHTML=html; }
+function openTambahCatatan() { document.getElementById('entryModalTitle').innerText='Tambah Catatan'; document.getElementById('entryJudul').value=''; document.getElementById('entryIsi').value=''; document.getElementById('entryModal').classList.add('show'); }
+function saveCatatanEntry() { const judul=document.getElementById('entryJudul').value.trim(); const isi=document.getElementById('entryIsi').value.trim(); if(!judul||!isi) return showToast('Isi judul dan konten!'); catatanList.push({ judul, isi, created_at:new Date().toLocaleDateString('id-ID') }); saveCatatanData(); renderCatatanList(); closeEntryModal(); showToast('Tersimpan'); }
+function deleteCatatanItem(idx) { if(confirm('Hapus catatan ini?')){ catatanList.splice(idx,1); saveCatatanData(); renderCatatanList(); showToast('Dihapus'); } }
+function viewDetailCatatan(idx) { currentDetailIndex=idx; const item=catatanList[idx]; document.getElementById('detailJudul').innerText=item.judul; document.getElementById('detailIsi').innerText=item.isi; document.getElementById('detailModal').classList.add('show'); }
+function shareDetailToWA() { const item=catatanList[currentDetailIndex]; if(!item) return; const text=`*${item.judul}*\n\n${item.isi}\n\n#AuvaKbihuAU`; window.open(`https://wa.me/?text=${encodeURIComponent(text)}`); }
+function shareCatatanItem(idx) { const item=catatanList[idx]; window.open(`https://wa.me/?text=${encodeURIComponent(`*${item.judul}*\n\n${item.isi}\n\n#AuvaKbihuAU`)}`); }
+function closeEntryModal() { document.getElementById('entryModal').classList.remove('show'); }
+function closeDetailModal() { document.getElementById('detailModal').classList.remove('show'); }
+
+// ==================== SETTINGS & THEME ====================
+function loadTheme() { const p=localStorage.getItem('auva_theme_primary'); const a=localStorage.getItem('auva_theme_accent'); if(p) document.documentElement.style.setProperty('--primary',p); if(a) document.documentElement.style.setProperty('--accent',a); }
+function setTheme(primary,accent) { document.documentElement.style.setProperty('--primary',primary); document.documentElement.style.setProperty('--accent',accent); localStorage.setItem('auva_theme_primary',primary); localStorage.setItem('auva_theme_accent',accent); }
+function resetAllData() { if(confirm('⚠️ PERINGATAN: Semua data akan dihapus permanen! Lanjutkan?')){ localStorage.clear(); showToast('Semua data direset'); setTimeout(()=>location.reload(),1500); } }
+
+// ==================== PWA ====================
+window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferredPrompt=e; showInstallBanner(); });
+function showInstallBanner() { if(!window.matchMedia('(display-mode: standalone)').matches) document.getElementById('installBanner').classList.add('show'); }
+function hideInstallBanner() { document.getElementById('installBanner').classList.remove('show'); }
+function closeInstallBanner() { hideInstallBanner(); localStorage.setItem('auva_install_dismissed',Date.now()); }
+async function installApp() { if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; hideInstallBanner(); }
+window.addEventListener('online',()=>document.getElementById('offlineIndicator').classList.remove('show'));
+window.addEventListener('offline',()=>document.getElementById('offlineIndicator').classList.add('show'));
+
+// ==================== INIT ====================
+function initApp() {
+    setTimeout(()=>document.getElementById('splashScreen').classList.add('hidden'),1500);
+    if(!navigator.onLine) document.getElementById('offlineIndicator').classList.add('show');
+    loadKasData();
+    loadJamaahData();
+    loadDynamicFieldsJamaah();
+    loadJamaahKitaData();
+    loadDynamicFieldsJamaahKita();
+    loadCatatanData();
+    loadTheme();
+    const savedAdmin = localStorage.getItem('auva_admin_mode') === 'true';
+    document.getElementById('adminMode').checked = savedAdmin;
+    if(savedAdmin) toggleAdminMode();
+    renderMenuGrid();
+    renderMenuSettings();
+    const kegiatan = localStorage.getItem('auva_kegiatan');
+    if(kegiatan) document.getElementById('kegiatan').value = kegiatan;
+    const colors = ['#1a5d4a','#2c3e50','#8e44ad','#16a085','#2980b9','#e67e22'];
+    let colorHtml=''; colors.forEach(c=>{ colorHtml+=`<div class="color-opt" style="background:${c}" onclick="setTheme('${c}', '#c9a227')"></div>`; });
+    document.getElementById('colorOptions').innerHTML = colorHtml;
+    if(sumberHartaList.length===0) tambahSumberHarta();
 }
 </script>
 </body>
-</html>
+                                                                                                                                                                                                                                                                                                                                                                                       </html>
