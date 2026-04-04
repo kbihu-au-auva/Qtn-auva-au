@@ -175,7 +175,7 @@
 
 <script>
 // ==================== SERVICE WORKER ====================
-const SW_CODE_STABLE = `const CACHE_NAME='auva-v6';const STATIC_ASSETS=['/','https://fonts.googleapis.com/css2?family=Amiri&family=Segoe+UI&display=swap','https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css','https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js','https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js','https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js','https://img.icons8.com/color/96/kaaba.png'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(async c=>{try{await c.addAll(STATIC_ASSETS);}catch(e){}}));self.skipWaiting();});self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;if(e.request.url.startsWith('chrome-extension://'))return;e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request).catch(()=>new Response('Offline mode'))));});`;
+const SW_CODE_STABLE = `const CACHE_NAME='auva-v7';const STATIC_ASSETS=['/','https://fonts.googleapis.com/css2?family=Amiri&family=Segoe+UI&display=swap','https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css','https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js','https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js','https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js','https://img.icons8.com/color/96/kaaba.png'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(async c=>{try{await c.addAll(STATIC_ASSETS);}catch(e){}}));self.skipWaiting();});self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;if(e.request.url.startsWith('chrome-extension://'))return;e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request).catch(()=>new Response('Offline mode'))));});`;
 function registerServiceWorker() { if(!('serviceWorker' in navigator)) return; const blob = new Blob([SW_CODE_STABLE], { type:'application/javascript' }); navigator.serviceWorker.register(URL.createObjectURL(blob), { scope:'/' }).catch(e=>console.log(e)); }
 if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', registerServiceWorker); else registerServiceWorker();
 
@@ -185,16 +185,7 @@ function showToast(msg) { const toast = document.getElementById('toast'); toast.
 function escapeHtml(text) { if(!text) return ''; return text.replace(/[&<>]/g, function(m) { if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }); }
 function formatRupiah(angka) { if(!angka) return '0'; return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
 function parseRupiah(str) { if(!str) return 0; let cleaned = str.toString().replace(/\./g, ''); let num = parseInt(cleaned, 10); return isNaN(num) ? 0 : num; }
-
-// Format semua input dengan class money-input saat ketik
-document.addEventListener('input', function(e) {
-    if(e.target.classList && e.target.classList.contains('money-input')) {
-        let value = e.target.value.replace(/\./g, '');
-        let num = parseInt(value, 10);
-        if(!isNaN(num)) e.target.value = num.toLocaleString('id-ID');
-        else if(value === '') e.target.value = '';
-    }
-});
+document.addEventListener('input', function(e) { if(e.target.classList && e.target.classList.contains('money-input')) { let value = e.target.value.replace(/\./g, ''); let num = parseInt(value, 10); if(!isNaN(num)) e.target.value = num.toLocaleString('id-ID'); else if(value === '') e.target.value = ''; } });
 
 // ==================== PAGE NAVIGATION ====================
 function showPage(pageId) {
@@ -224,8 +215,7 @@ const menuItems = [
     { id: 'zakat', icon: '📊', label: 'Zakat', default: true }
 ];
 function renderMenuGrid() {
-    const container = document.getElementById('menuGrid');
-    if(!container) return;
+    const container = document.getElementById('menuGrid'); if(!container) return;
     let html = '';
     for(const menu of menuItems) {
         const isVisible = localStorage.getItem(`menu_${menu.id}_visible`) !== 'false';
@@ -253,8 +243,7 @@ function toggleAdminMode() {
     }
 }
 function renderMenuSettings() {
-    const container = document.getElementById('menuSettingsContainer');
-    if(!container) return;
+    const container = document.getElementById('menuSettingsContainer'); if(!container) return;
     let html = '';
     for(const menu of menuItems) {
         const isVisible = localStorage.getItem(`menu_${menu.id}_visible`) !== 'false';
@@ -335,7 +324,27 @@ function buatLaporanWA() {
 function salinLaporanWA() { if(lastWAText) navigator.clipboard.writeText(lastWAText).then(()=>showToast("✅ Laporan tersalin!")); else showToast('Buat laporan dulu!'); }
 function backupKasData() { if(dataKas.length===0) return alert("Tidak ada data!"); const backup={ app:"Auva Kbihu AU - Kas", version:"1.0", created:new Date().toISOString(), kegiatan:document.getElementById('kegiatan').value, data:dataKas }; const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'})); a.download=`Auva_Kas_Backup_${new Date().toLocaleDateString('id-ID').replace(/\//g,'-')}.json`; a.click(); showToast('Backup kas berhasil'); }
 function restoreKasData(input) { const file=input.files[0]; if(!file) return; input.value=''; if(!confirm("Timpa data kas yang ada?")) return; const reader=new FileReader(); reader.onload=e=>{ try{ const backup=JSON.parse(e.target.result); if(backup.data && Array.isArray(backup.data)){ dataKas=backup.data; if(backup.kegiatan) document.getElementById('kegiatan').value=backup.kegiatan; saveKasData(); showToast(`Restore ${dataKas.length} transaksi berhasil`); } else throw new Error(); } catch(err){ alert("File backup tidak valid!"); } }; reader.readAsText(file); }
-function exportKasPDF() { if(dataKas.length===0) return alert("Tidak ada data!"); const {jsPDF}=window.jspdf; const doc=new jsPDF(); doc.setFillColor(26,93,74); doc.rect(0,0,210,40,'F'); doc.setTextColor(255,255,255); doc.setFontSize(20); doc.text('AUVA - LAPORAN KAS',105,25,{align:'center'}); doc.setTextColor(0,0,0); doc.setFontSize(10); const judul=document.getElementById('kegiatan').value.trim()||"Laporan Kas"; doc.text(`Kegiatan: ${judul}`,14,50); doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`,14,58); let masuk=0,keluar=0; dataKas.forEach(i=>{ if(i.tipe==='masuk') masuk+=i.nom; else keluar+=i.nom; }); const tableData=dataKas.map(i=>[i.tgl,i.kegiatan||'-',i.ket,i.tipe==='masuk'?'MASUK':'KELUAR',`Rp ${i.nom.toLocaleString('id-ID')}`]); doc.autoTable({startY:70,head:[['Tgl','Kegiatan','Ket','Tipe','Nominal']],body:tableData,theme:'striped',headStyles:{fillColor:[26,93,74]},styles:{fontSize:8}}); doc.save(`Laporan_Kas_${judul.replace(/\s+/g,'_')}.pdf`); showToast('PDF berhasil di-export'); }
+function exportKasPDF() {
+    if(dataKas.length===0) return alert("Tidak ada data!");
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFillColor(26,93,74); doc.rect(0,0,210,40,'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(20); doc.text('AUVA - LAPORAN KAS',105,25,{align:'center'});
+    doc.setTextColor(0,0,0); doc.setFontSize(10);
+    const judul = document.getElementById('kegiatan').value.trim() || "Laporan Kas";
+    doc.text(`Kegiatan: ${judul}`,14,50); doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`,14,58);
+    let masuk=0, keluar=0; dataKas.forEach(i=>{ if(i.tipe==='masuk') masuk+=i.nom; else keluar+=i.nom; });
+    const tableData = dataKas.map(i=>[i.tgl,i.kegiatan||'-',i.ket,i.tipe==='masuk'?'MASUK':'KELUAR',`Rp ${i.nom.toLocaleString('id-ID')}`]);
+    doc.autoTable({startY:70,head:[['Tgl','Kegiatan','Ket','Tipe','Nominal']],body:tableData,theme:'striped',headStyles:{fillColor:[26,93,74]},styles:{fontSize:8}});
+    let finalY = doc.lastAutoTable.finalY + 10;
+    doc.setFontSize(10); doc.setFont('helvetica','bold');
+    doc.text(`Total Pemasukan: Rp ${masuk.toLocaleString('id-ID')}`,14,finalY);
+    doc.text(`Total Pengeluaran: Rp ${keluar.toLocaleString('id-ID')}`,14,finalY+8);
+    doc.setTextColor(26,93,74);
+    doc.text(`SALDO AKHIR: Rp ${(masuk-keluar).toLocaleString('id-ID')}`,14,finalY+16);
+    doc.save(`Laporan_Kas_${judul.replace(/\s+/g,'_')}.pdf`);
+    showToast('PDF berhasil di-export');
+}
 function exportKasExcel() { if(dataKas.length===0) return alert("Tidak ada data!"); const judul=document.getElementById('kegiatan').value.trim()||"Laporan_Kas"; const wsData=dataKas.map(i=>({ Tanggal:i.tgl, Kegiatan:i.kegiatan, Keterangan:i.ket, Tipe:i.tipe.toUpperCase(), Nominal:i.nom })); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(wsData),"Transaksi Kas"); XLSX.writeFile(wb,`${judul.replace(/\s+/g,'_')}.xlsx`); showToast('Excel berhasil di-export'); }
 
 // ==================== DATA JAMAAH ====================
@@ -350,8 +359,7 @@ function renderJamaahList() {
     const container = document.getElementById('jamaahListContainer'); if(!container) return;
     if(jamaahList.length===0) { container.innerHTML = '<p style="text-align:center; padding:20px;">Belum ada data jamaah</p>'; return; }
     let html = '';
-    [...jamaahList].reverse().forEach((j,idx)=>{
-        const originalIdx = jamaahList.length-1-idx;
+    [...jamaahList].reverse().forEach((j,idx)=>{ const originalIdx = jamaahList.length-1-idx;
         html += `<div class="jamaah-card"><div class="jamaah-header"><div><div class="jamaah-nama">👤 ${escapeHtml(j.nama_lengkap)}</div><div class="jamaah-tgl">📅 ${j.created_at || '-'}</div></div><div class="jamaah-actions"><button class="btn-share-wa" onclick="shareSingleJamaah(${originalIdx})">💬</button><button class="btn-edit-jamaah" onclick="editJamaah(${originalIdx})">✏️</button><button class="btn-delete-jamaah" onclick="deleteJamaah(${originalIdx})">🗑️</button></div></div><div class="jamaah-detail">`;
         for(const field of dynamicFieldsJamaah) { const val = j.additional_fields?.[field.name] || ''; if(val) html += `<div class="jamaah-detail-item"><strong>${escapeHtml(field.label)}:</strong> ${escapeHtml(val)}</div>`; }
         html += `</div></div>`;
@@ -481,4 +489,4 @@ function initApp() {
 }
 </script>
 </body>
-                                                                                                                                                                                                                                                                                                                                                                                       </html>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             </html>
