@@ -212,7 +212,7 @@
     <div class="bottom-nav"><div class="nav-item nav-active" onclick="showPage('home')">🏠<br>Home</div><div class="nav-item" onclick="showPage('estimasi')">📊<br>Estimasi</div><div class="nav-item" onclick="showPage('kas')">💰<br>Kas</div><div class="nav-item" onclick="showPage('jamaah')">👥<br>Jamaah</div><div class="nav-item" onclick="showPage('setting')">⚙️<br>Setting</div></div>
 
 <script>
-const SW_CODE_STABLE = `const CACHE_NAME='auva-v13';const STATIC_ASSETS=['/','https://fonts.googleapis.com/css2?family=Amiri&family=Segoe+UI&display=swap','https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css','https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js','https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js','https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js','https://img.icons8.com/color/96/kaaba.png'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(async c=>{try{await c.addAll(STATIC_ASSETS);}catch(e){}}));self.skipWaiting();});self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;if(e.request.url.startsWith('chrome-extension://'))return;e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request).catch(()=>new Response('Offline mode'))));});`;
+const SW_CODE_STABLE = `const CACHE_NAME='auva-v14';const STATIC_ASSETS=['/','https://fonts.googleapis.com/css2?family=Amiri&family=Segoe+UI&display=swap','https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css','https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js','https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js','https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js','https://img.icons8.com/color/96/kaaba.png'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(async c=>{try{await c.addAll(STATIC_ASSETS);}catch(e){}}));self.skipWaiting();});self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;if(e.request.url.startsWith('chrome-extension://'))return;e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request).catch(()=>new Response('Offline mode'))));});`;
 function registerServiceWorker() { if(!('serviceWorker' in navigator)) return; const blob = new Blob([SW_CODE_STABLE], { type:'application/javascript' }); navigator.serviceWorker.register(URL.createObjectURL(blob), { scope:'/' }).catch(e=>console.log(e)); }
 if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', registerServiceWorker); else registerServiceWorker();
 
@@ -269,7 +269,6 @@ let lastCalculatedPrice = 0;
 let lastCalculatedPaket = '';
 let lastCalculatedTotalJam = 0;
 
-// Simpan data estimasi ke localStorage
 function saveEstimasiData() {
     const estimasiData = {
         lokasiPaket: document.getElementById('lokasiPaket').value,
@@ -425,8 +424,67 @@ function closeFieldModal() { document.getElementById('fieldModal').classList.rem
 function addDynamicFieldJamaah() { const name=document.getElementById('newFieldName').value.trim().toLowerCase(); const label=document.getElementById('newFieldLabel').value.trim(); const type=document.getElementById('newFieldType').value; if(!/^[a-z0-9_]+$/.test(name)) return showToast('Nama field: huruf kecil, angka, underscore!'); if(!label) return showToast('Label harus diisi!'); if(dynamicFieldsJamaah.some(f=>f.name===name)) return showToast('Field sudah ada!'); dynamicFieldsJamaah.push({name,label,type}); saveDynamicFieldsJamaah(); closeFieldModal(); renderFieldsList(); showToast('Field ditambahkan'); }
 function confirmDeleteDynamicField(idx) { showConfirm(`Hapus field "${dynamicFieldsJamaah[idx].label}"?`, (confirmed)=>{ if(confirmed) { dynamicFieldsJamaah.splice(idx,1); saveDynamicFieldsJamaah(); renderFieldsList(); renderJamaahListWithPagination(); showToast('Field dihapus'); } }); }
 function closeJamaahModal() { document.getElementById('jamaahModal').classList.remove('show'); editingJamaahId=null; }
-function importJamaahFromExcel(input) { const file = input.files[0]; if(!file) return; showConfirm("Import Excel akan MENAMBAH data jamaah baru (tidak menghapus yang lama). Lanjutkan?", (confirmed)=>{ if(!confirmed) { input.value = ''; return; } const reader = new FileReader(); reader.onload = function(e) { const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type:'array'}); const sheet = workbook.Sheets[workbook.SheetNames[0]]; const rows = XLSX.utils.sheet_to_json(sheet, {header:1, defval:""}); if(!rows || rows.length < 2) { showAlert('File Excel kosong!'); input.value=''; return; } const headers = rows[0].map(h => h ? h.toString().trim() : ''); const namaIndex = headers.findIndex(h => h && (h.toLowerCase().includes('nama') || h.toLowerCase() === 'name')); if(namaIndex === -1) { showAlert('Header "Nama" tidak ditemukan!'); input.value=''; return; } let added = 0; const now = new Date().toLocaleDateString('id-ID')+' '+new Date().toLocaleTimeString('id-ID'); for(let i=1; i<rows.length; i++) { const row = rows[i]; if(!row || row.length === 0) continue; const nama = row[namaIndex] ? row[namaIndex].toString().trim() : ''; if(!nama) continue; const additional = {}; for(const field of dynamicFieldsJamaah) { const fieldIndex = headers.findIndex(h => h && (h.toLowerCase() === field.label.toLowerCase() || h.toLowerCase() === field.name.toLowerCase())); if(fieldIndex !== -1 && row[fieldIndex]) { additional[field.name] = row[fieldIndex].toString().trim(); } } jamaahList.push({ id:Date.now()+Math.random()+i, nama_lengkap:nama, additional_fields:additional, created_at:now }); added++; } saveJamaahData(); showToast(`✅ Import selesai! ${added} jamaah ditambahkan`); input.value = ''; }; reader.readAsArrayBuffer(file); }); }
 function confirmDeleteAllJamaah() { showConfirm('⚠️ PERINGATAN: Semua data jamaah akan dihapus PERMANEN! Data Kas, Catatan, Zakat, dan Jamaah Kita tetap aman. Lanjutkan?', (confirmed)=>{ if(confirmed) { jamaahList = []; saveJamaahData(); showToast('✅ Semua data jamaah telah dihapus'); renderJamaahListWithPagination(); } }); }
+
+// PERBAIKAN IMPORT EXCEL: OTOMATIS DETEKSI KOLOM WHATSAPP
+function importJamaahFromExcel(input) {
+    const file = input.files[0];
+    if(!file) return;
+    showConfirm("Import Excel akan MENAMBAH data jamaah baru (tidak menghapus yang lama). Lanjutkan?", (confirmed)=>{
+        if(!confirmed) { input.value = ''; return; }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, {type:'array'});
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const rows = XLSX.utils.sheet_to_json(sheet, {header:1, defval:""});
+            if(!rows || rows.length < 2) { showAlert('File Excel kosong!'); input.value=''; return; }
+            const headers = rows[0].map(h => h ? h.toString().trim() : '');
+            const namaIndex = headers.findIndex(h => h && (h.toLowerCase().includes('nama') || h.toLowerCase() === 'name'));
+            if(namaIndex === -1) { showAlert('Header "Nama" tidak ditemukan!'); input.value=''; return; }
+            // Cari kolom WhatsApp (case insensitive)
+            const waIndex = headers.findIndex(h => h && (h.toLowerCase() === 'whatsapp' || h.toLowerCase() === 'no hp' || h.toLowerCase() === 'telepon' || h.toLowerCase() === 'wa'));
+            let added = 0;
+            const now = new Date().toLocaleDateString('id-ID')+' '+new Date().toLocaleTimeString('id-ID');
+            // Pastikan field WhatsApp ada di dynamicFieldsJamaah (buat otomatis jika belum)
+            let whatsappField = dynamicFieldsJamaah.find(f => f.name === 'whatsapp');
+            if(!whatsappField && waIndex !== -1) {
+                dynamicFieldsJamaah.push({ name: 'whatsapp', label: 'WhatsApp', type: 'tel' });
+                saveDynamicFieldsJamaah();
+                whatsappField = dynamicFieldsJamaah.find(f => f.name === 'whatsapp');
+            }
+            for(let i=1; i<rows.length; i++) {
+                const row = rows[i];
+                if(!row || row.length === 0) continue;
+                const nama = row[namaIndex] ? row[namaIndex].toString().trim() : '';
+                if(!nama) continue;
+                const additional = {};
+                // Untuk setiap field dinamis yang sudah ada, cari di Excel
+                for(const field of dynamicFieldsJamaah) {
+                    const fieldIndex = headers.findIndex(h => h && (h.toLowerCase() === field.label.toLowerCase() || h.toLowerCase() === field.name.toLowerCase()));
+                    if(fieldIndex !== -1 && row[fieldIndex]) {
+                        additional[field.name] = row[fieldIndex].toString().trim();
+                    }
+                }
+                // Jika kolom WhatsApp terdeteksi tapi belum masuk karena label mismatch
+                if(waIndex !== -1 && row[waIndex] && !additional['whatsapp']) {
+                    additional['whatsapp'] = row[waIndex].toString().trim();
+                }
+                jamaahList.push({
+                    id: Date.now()+Math.random()+i,
+                    nama_lengkap: nama,
+                    additional_fields: additional,
+                    created_at: now
+                });
+                added++;
+            }
+            saveJamaahData();
+            showToast(`✅ Import selesai! ${added} jamaah ditambahkan`);
+            input.value = '';
+        };
+        reader.readAsArrayBuffer(file);
+    });
+}
 
 // ==================== JAMAAH KITA ====================
 let jamaahKitaList = []; let dynamicFieldsJamaahKita = [];
@@ -568,4 +626,4 @@ function initApp() {
 }
 </script>
 </body>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         </html>
+                                                                                                                                                                                                                                              </html>
